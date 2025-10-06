@@ -180,20 +180,20 @@ public class RewardSpawner : MonoBehaviour
 
     void ValidatePlayerSetup()
     {
-        Debug.Log($"Validating player setup: {player.name}");
+        //Debug.Log($"Validating player setup: {player.name}");
         if (!player.CompareTag("Player"))
         {
-            Debug.LogWarning("Player does not have 'Player' tag! Setting it now.");
+            //Debug.LogWarning("Player does not have 'Player' tag! Setting it now.");
             player.tag = "Player";
         }
 
         Collider2D playerCollider = player.GetComponent<Collider2D>();
         if (playerCollider == null)
         {
-            Debug.LogWarning("Player missing Collider2D! Adding BoxCollider2D.");
+            //Debug.LogWarning("Player missing Collider2D! Adding BoxCollider2D.");
             playerCollider = player.AddComponent<BoxCollider2D>();
         }
-        Debug.Log($"Player Collider: {playerCollider.GetType().Name}, IsTrigger: {playerCollider.isTrigger}");
+        //Debug.Log($"Player Collider: {playerCollider.GetType().Name}, IsTrigger: {playerCollider.isTrigger}");
 
         Rigidbody2D playerRb = player.GetComponent<Rigidbody2D>();
         if (playerRb == null)
@@ -203,7 +203,7 @@ public class RewardSpawner : MonoBehaviour
             playerRb.isKinematic = true;
             playerRb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         }
-        Debug.Log($"Player Rigidbody2D: IsKinematic: {playerRb.isKinematic}, BodyType: {playerRb.bodyType}");
+        //Debug.Log($"Player Rigidbody2D: IsKinematic: {playerRb.isKinematic}, BodyType: {playerRb.bodyType}");
     }
 
     void Update()
@@ -246,15 +246,15 @@ public class RewardSpawner : MonoBehaviour
         Collider2D rewardCollider = reward.GetComponent<Collider2D>();
         if (rewardCollider == null)
         {
-            Debug.LogWarning($"Reward at {spawnPosition} missing Collider2D! Adding CircleCollider2D.");
+            //Debug.LogWarning($"Reward at {spawnPosition} missing Collider2D! Adding CircleCollider2D.");
             rewardCollider = reward.AddComponent<CircleCollider2D>();
         }
         if (!rewardCollider.isTrigger)
         {
-            Debug.LogWarning($"Reward at {spawnPosition} Collider2D not set to Trigger! Setting it now.");
+            //Debug.LogWarning($"Reward at {spawnPosition} Collider2D not set to Trigger! Setting it now.");
             rewardCollider.isTrigger = true;
         }
-        Debug.Log($"Spawned reward at {spawnPosition} with Collider: {rewardCollider.GetType().Name}, IsTrigger: {rewardCollider.isTrigger}");
+        //Debug.Log($"Spawned reward at {spawnPosition} with Collider: {rewardCollider.GetType().Name}, IsTrigger: {rewardCollider.isTrigger}");
 
         lastSpawnX = spawnX;
     }
@@ -269,19 +269,19 @@ public class Reward : MonoBehaviour
     {
         xpValue = value;
         gameManager = gm;
-        Debug.Log($"Reward initialized at {transform.position} with XP value: {xpValue}");
+        //Debug.Log($"Reward initialized at {transform.position} with XP value: {xpValue}");
     }
 
     void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Trigger detected at {transform.position} with: {other.gameObject.name} (Tag: {other.gameObject.tag})");
+        //Debug.Log($"Trigger detected at {transform.position} with: {other.gameObject.name} (Tag: {other.gameObject.tag})");
         if (other.gameObject.CompareTag("Player"))
         {
-            Debug.Log($"Player collected reward at {transform.position}!");
+            //Debug.Log($"Player collected reward at {transform.position}!");
             if (gameManager != null)
             {
                 gameManager.AddXP(xpValue);
-                Debug.Log($"Added {xpValue} XP. Total XP: {gameManager.GetTotalXP()}");
+                //Debug.Log($"Added {xpValue} XP. Total XP: {gameManager.GetTotalXP()}");
             }
             else
             {

@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
@@ -14,10 +14,11 @@ using System.Collections.Generic;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 public class GameManager : MonoBehaviour
 {
-    public static GameManager Instance { get; private set; }
+    //public static GameManager Instance { get; private set; }
 
     public Canvas mainMenuCanvas;     // Reference to your main menu canvas
     public Canvas loginCanvas;
+    public Canvas HTPCanvas;
     public Canvas leaderboardCanvas;
     public Canvas LoadingCanvas;
     public Button startButton;         // Reference to your start button
@@ -32,6 +33,7 @@ public class GameManager : MonoBehaviour
     public Button yellowButton;
     public Button redButton;
     public bool isGameStarted = false; // Tracks if game has started
+    public bool hasDied = false; // Tracks if game has started
     public Canvas pauseMenu;
     public Canvas resumeMenu;
     public Canvas gameOverMenu;
@@ -75,36 +77,36 @@ public class GameManager : MonoBehaviour
     [SerializeField] private List<TextMeshProUGUI> nameFields = new List<TextMeshProUGUI>(); // List of TextMeshProUGUI fields
     [SerializeField] private List<string> nameList = new List<string>(); // List of strings
     [SerializeField] private List<uint> scoreList = new List<uint>(); // List of string
-    public LoadingDots loadingDots;
+    //public LoadingDots loadingDots;
     private Stack<GameObject> canvasStack = new Stack<GameObject>();
 
-    void Awake()
-    {
-        if (Instance == null)
-        {
-            Instance = this;
-        }
-        else
-        {
-            Destroy(gameObject);
-            return;
-        }
-    }
+    //void Awake()
+    //{
+    //    if (Instance == null)
+    //    {
+    //        Instance = this;
+    //    }
+    //    else
+    //    {
+    //        Destroy(gameObject);
+    //        return;
+    //    }
+    //}
 
     void Start()
     {
         // Find WalletConnectManager in the scene
         walletConnectManager = FindObjectOfType<WalletConnectManager>();
-        loadingDots = loadingDots.GetComponent<LoadingDots>();
+        //loadingDots = loadingDots.GetComponent<LoadingDots>();
         if (walletConnectManager == null)
         {
             Debug.LogError("WalletConnectManager not found in the scene!");
         }
         
-        if (loadingDots == null)
-        {
-            Debug.LogError("Loading dots not found in the scene!");
-        }
+        //if (loadingDots == null)
+        //{
+        //    Debug.LogError("Loading dots not found in the scene!");
+        //}
 
         // Store initial player position
         if (player != null)
@@ -124,11 +126,14 @@ public class GameManager : MonoBehaviour
             pauseMenu.gameObject.SetActive(false);
             resumeMenu.gameObject.SetActive(false);
             gameOverMenu.gameObject.SetActive(false);
+            HTPCanvas.gameObject.SetActive(false);
+            LoadingCanvas.gameObject.SetActive(false);
             if (instructionCanvas != null)
             {
                 instructionCanvas.gameObject.SetActive(false);
             }
             Time.timeScale = 0f;
+            hasDied = false;
 
             // Add initial canvas to stack
         //canvasStack.Clear(); // Clear stack to avoid duplicates
@@ -325,6 +330,28 @@ public class GameManager : MonoBehaviour
         //shouldStartImmediately = false; // Reset the flag
     }
 
+
+    public void OnBackButtonClickedHTP()
+    { 
+        
+         HTPCanvas.gameObject.SetActive(false);
+         mainMenuCanvas.gameObject.SetActive(true);      
+    }
+    
+    public void OnBackButtonClickedLB()
+    {
+        if (hasDied)
+        {
+            leaderboardCanvas.gameObject.SetActive(false);
+            gameOverMenu.gameObject.SetActive(true);
+        }
+        else
+        {
+            leaderboardCanvas.gameObject.SetActive(false);
+            mainMenuCanvas.gameObject.SetActive(true);
+        }               
+    }
+    
     void OnPauseButtonClicked()
     {
         AudioManager.Instance.PlayClickSound();
@@ -380,6 +407,7 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.Instance.PlayGameOverMusic();
         isGameStarted = false;
+        hasDied = true;
         gameOverMenu.gameObject.SetActive(true);
         pauseMenu.gameObject.SetActive(false);
         Time.timeScale = 0f;
@@ -391,56 +419,7 @@ public class GameManager : MonoBehaviour
         await SubmitScore();
         Debug.Log("Score submitted successfully");
         Debug.Log("Fetching top players...");
-        //ReadScore(0);
         
-
-
-        //try
-        //{
-        //    // Submit the player's score
-            
-
-        //    // Fetch and display top players
-        //    if (walletConnectManager != null && leaderboardText != null)
-        //    {
-        //        Debug.Log("Fetching top players...");
-        //        walletConnectManager.GetTopPlayers(10, (PlayerScore[] topPlayers) =>
-        //        {
-        //            if (topPlayers.Length == 0)
-        //            {
-        //                leaderboardText.text = "Leaderboard: No data available";
-        //                Debug.LogWarning("No top players data received");
-        //                return;
-        //            }
-
-        //            // Format leaderboard text
-        //            System.Text.StringBuilder leaderboardDisplay = new System.Text.StringBuilder("Leaderboard:\n");
-        //            for (int i = 0; i < topPlayers.Length; i++)
-        //            {
-        //                string shortAddress = $"{topPlayers[i].player.Substring(0, 4)}...{topPlayers[i].player.Substring(topPlayers[i].player.Length - 4)}";
-        //                leaderboardDisplay.AppendLine($"{i + 1}. {shortAddress}: {topPlayers[i].score} XP");
-        //            }
-        //            leaderboardText.text = leaderboardDisplay.ToString();
-        //            Debug.Log($"Leaderboard updated with {topPlayers.Length} players");
-        //        });
-        //    }
-        //    else
-        //    {
-        //        Debug.LogWarning("Cannot fetch leaderboard: WalletConnectManager or leaderboardText not set");
-        //        if (leaderboardText != null)
-        //        {
-        //            leaderboardText.text = "Leaderboard: Unavailable";
-        //        }
-        //    }
-        //}
-        //catch (System.Exception ex)
-        //{
-        //    Debug.LogError($"Error in GameOver: {ex.Message}");
-        //    if (leaderboardText != null)
-        //    {
-        //        leaderboardText.text = "Leaderboard: Error fetching data";
-        //    }
-        //}
     }
 
     public async void SetScore()
@@ -699,7 +678,9 @@ public class GameManager : MonoBehaviour
         ShowInstruction();
     
     
-    }void OnLeaderboardClicked()
+    }
+    
+    void OnLeaderboardClicked()
     {
         AudioManager.Instance.PlayClickSound();
         GetLeaderboard();
@@ -833,7 +814,7 @@ public class GameManager : MonoBehaviour
         currentCanvas.gameObject.SetActive(false);
         LoadingCanvas.gameObject.SetActive(true);
         Debug.Log("Dots loading");
-        loadingDots.StartLoading();
+        //loadingDots.StartLoading();
         Debug.Log("Reading blockchain data");
         //await WalletConnectManager.Instance.GetScoreList();
         for (int i = 0; i < 5; i++)
@@ -865,11 +846,20 @@ public class GameManager : MonoBehaviour
     {
         nameList = WalletConnectManager.Instance.NameList();
 
+        //for (int i = 0; i < 5; i++)
+        //{
+
+        //    nameFields[i].text = nameList[i];
+        //}      
+
         for (int i = 0; i < 5; i++)
         {
+            string name = nameList[i];
+            if (name.Length > 8)
+                name = name.Substring(0, 10);
 
-            nameFields[i].text = nameList[i];
-        }      
+            nameFields[i].text = name;
+        }
     }
 
     void UpdateScoreFields()
@@ -880,5 +870,12 @@ public class GameManager : MonoBehaviour
         {
             scoreFields[i].text = scoreList[i].ToString();
         }
+    }
+
+    public void OnHTPClicked()
+    {
+        AudioManager.Instance.PlayClickSound();
+        mainMenuCanvas.gameObject.SetActive(false);
+        HTPCanvas.gameObject.SetActive(true);
     }
 }

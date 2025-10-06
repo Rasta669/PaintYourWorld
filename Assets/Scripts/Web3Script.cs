@@ -779,7 +779,7 @@ public class WalletConnectManager : MonoBehaviour
 
         var balance = await wallet.GetBalance(chainId: ActiveChainId);
         var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 2, addCommas: true);
-        Debug.Log($"Wallet balance: {balanceEth}");
+        //Debug.Log($"Wallet balance: {balanceEth}");
         if (EthBalanceText != null)
         {
             EthBalanceText.gameObject.SetActive(true);
@@ -792,7 +792,7 @@ public class WalletConnectManager : MonoBehaviour
             var decimals = 2;
             var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
             var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-            Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+            //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
             if (CustomTokenBalanceText != null)
             {
                 CustomTokenBalanceText.gameObject.SetActive(true);
@@ -868,7 +868,7 @@ public class WalletConnectManager : MonoBehaviour
     {
         if (wallet != null && !string.IsNullOrEmpty(walletAddress))
         {
-            Debug.Log($"Retrieved connected wallet address: {walletAddress}");
+            //Debug.Log($"Retrieved connected wallet address: {walletAddress}");
             return walletAddress;
         }
         else
@@ -880,7 +880,7 @@ public class WalletConnectManager : MonoBehaviour
 
     internal async Task SubmitScore(float score)
     {
-        Debug.Log($"Submitting score of {score} to blockchain for address {walletAddress}");
+        //Debug.Log($"Submitting score of {score} to blockchain for address {walletAddress}");
         var contract = await ThirdwebManager.Instance.GetContract(
             LeaderboardContractAddress,
             84532
@@ -918,18 +918,18 @@ public class WalletConnectManager : MonoBehaviour
                 ActiveChainId
                 
             );
-            Debug.Log(" Starting to fetch");
+            //Debug.Log(" Starting to fetch");
 
             // Read the 0th score from the scores
             // Read the top scores from the contract
             uint topScore = await contract.Read<uint>("getScoreByPosition",position);
             readScore = topScore;
             scoreList.Add(readScore);
-            Debug.Log($"{position +1 }th Score: {readScore}");
+            //Debug.Log($"{position +1 }th Score: {readScore}");
             string PlayerName = await contract.Read<string>("getPlayerNameByPosition", position);
             readName = PlayerName;
             nameList.Add(readName);
-            Debug.Log($"{position + 1}th name : {PlayerName}");  // Logs 1, which is correct
+            //Debug.Log($"{position + 1}th name : {PlayerName}");  // Logs 1, which is correct
             //uint timestamp = await contract.Read<uint>("getTimestampByPosition", position);
             //readTimestamp = timestamp;
             //Debug.Log($"{position + 1}th timestamp : {timestamp}");  // Logs 1, which is correct
@@ -944,27 +944,27 @@ public class WalletConnectManager : MonoBehaviour
 
     public async Task RegisterLeaderboardName(string name)
     {
-        Debug.Log($"Registering {name} to blockchain for address {walletAddress}");
+        //Debug.Log($"Registering {name} to blockchain for address {walletAddress}");
         var contract = await ThirdwebManager.Instance.GetContract(
             LeaderboardContractAddress,
             84532
         );
-        Debug.Log("stage1");
+        //Debug.Log("stage1");
         await contract.Write(wallet, "setPlayerName", 0, name);
-        Debug.Log("Registered");
+        //Debug.Log("Registered");
         await ReadName(0);
     }
 
     public async Task ReadName(uint position)
     {
-        Debug.Log($"Reading name to blockchain for position {position}");
+        //Debug.Log($"Reading name to blockchain for position {position}");
         var contract = await ThirdwebManager.Instance.GetContract(
             LeaderboardContractAddress,
             84532
         );
         string gamename = await contract.Read<string>("getPlayerNameByPosition", position);
         Gamename = gamename;
-        Debug.Log(Gamename);
+        //Debug.Log(Gamename);
     }
 
     public async Task GetTotalScorers()
@@ -975,7 +975,7 @@ public class WalletConnectManager : MonoBehaviour
             84532
         );
         scorers = await contract.Read<uint>("getTotalScores");
-        Debug.Log(scorers);
+        //Debug.Log(scorers);
     }
 
     public uint TotalScorers()
