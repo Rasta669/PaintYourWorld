@@ -14,37 +14,42 @@ using System.Collections.Generic;
 #pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
 public class GameManager : MonoBehaviour
 {
-    //public static GameManager Instance { get; private set; }
+    public static GameManager Instance { get; private set; }
 
-    public Canvas mainMenuCanvas;     // Reference to your main menu canvas
-    public Canvas loginCanvas;
-    public Canvas HTPCanvas;
-    public Canvas leaderboardCanvas;
-    public Canvas LoadingCanvas;
-    public Button startButton;         // Reference to your start button
-    public Button pauseButton;         // Reference to your pause button
-    public Button resumeButton;        // Reference to your resume button
-    public Button restartButton;       // Reference to your restart button
-    public Button BMMutton;            // Reference to your back to main menu button
-    public Button RBMMutton;           // Reference to your back to main menu button
+    [SerializeField] private Canvas mainMenuCanvas;     // Reference to your main menu canvas
+    [SerializeField] private Canvas loginCanvas;
+    [SerializeField] private Canvas HTPCanvas;
+    [SerializeField] private Canvas leaderboardCanvas;
+    [SerializeField] private Canvas LoadingCanvas;
+    [SerializeField] private Button startButton;         // Reference to your start button
+    [SerializeField] private Button pauseButton;         // Reference to your pause button
+    [SerializeField] private Button resumeButton;        // Reference to your resume button
+    [SerializeField] private Button restartButton;       // Reference to your restart button
+    [SerializeField] private Button BMMutton;            // Reference to your back to main menu button
+    [SerializeField] private Button RBMMutton;           // Reference to your back to main menu button
     // Color selection buttons in pause menu
-    public Button purpleButton;
-    public Button blueButton;
-    public Button yellowButton;
-    public Button redButton;
+    [SerializeField] private Button purpleButton;
+    [SerializeField] private Button blueButton;
+    [SerializeField] private Button yellowButton;
+    [SerializeField] private Button redButton;
+    [SerializeField] private Button ghostButton;
+    [SerializeField] private Button brownButton;
     public bool isGameStarted = false; // Tracks if game has started
+    public bool isGameLoggedIn = false; // Tracks if game has been logged in
     public bool hasDied = false; // Tracks if game has started
-    public Canvas pauseMenu;
-    public Canvas resumeMenu;
-    public Canvas gameOverMenu;
-    public GameObject player;          // Reference to your player GameObject
-    public Camera main;          // Reference to your main camera
-    public PaintManager paintManager;  // Reference to your PaintManager
-    public TextMeshProUGUI xpText;
-    public TextMeshProUGUI gameOverText;
-    public TextMeshProUGUI walletAddressText; // New: Displays wallet address in pause menu
-    public TextMeshProUGUI claimedTokenText; // New: Displays claimed token balance in pause menu
-    public TextMeshProUGUI GOclaimedTokenText; // New: Displays claimed token balance in pause menu
+    [SerializeField] private Canvas pauseMenu;
+    [SerializeField] private Canvas resumeMenu;
+    [SerializeField] private Canvas gameOverMenu;
+    [SerializeField] private CanvasGroup transitionCanvasGroup;
+    [SerializeField] private float transitionDuration = 0.5f;
+    [SerializeField] private GameObject player;          // Reference to your player GameObject
+    [SerializeField] private Camera main;          // Reference to your main camera
+    [SerializeField] private PaintManager paintManager;  // Reference to your PaintManager
+    [SerializeField] private TextMeshProUGUI xpText;
+    [SerializeField] private TextMeshProUGUI gameOverText;
+    [SerializeField] private TextMeshProUGUI walletAddressText; // New: Displays wallet address in pause menu
+    [SerializeField] private TextMeshProUGUI claimedTokenText; // New: Displays claimed token balance in pause menu
+    [SerializeField] private TextMeshProUGUI GOclaimedTokenText; // New: Displays claimed token balance in pause menu
     private TextMeshProUGUI _rankText;
     private Vector3 initialPlayerPosition; // Store player's starting position
     //private static bool shouldStartImmediately = false; // Flag for immediate start after restart
@@ -93,12 +98,93 @@ public class GameManager : MonoBehaviour
     //    }
     //}
 
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject); // Keep GameManager
+            if (transitionCanvasGroup != null)
+                DontDestroyOnLoad(transitionCanvasGroup.gameObject); // Keep canvas group alive
+            SceneManager.sceneLoaded += OnSceneLoaded;
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
+
+
+    //void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    //{
+    //    if (isGameLoggedIn)
+    //    {
+    //        ResetGameState();
+    //        if (loginCanvas != null)
+    //        {
+    //            loginCanvas.gameObject.SetActive(false);
+    //        }
+
+    //        mainMenuCanvas.gameObject.SetActive(true);
+    //        pauseMenu.gameObject.SetActive(false);
+    //        resumeMenu.gameObject.SetActive(false);
+    //        gameOverMenu.gameObject.SetActive(false);
+    //        HTPCanvas.gameObject.SetActive(false);
+    //        LoadingCanvas.gameObject.SetActive(false);
+    //    }
+    //    else
+    //    {
+    //        loginCanvas.gameObject.SetActive(true);
+    //        mainMenuCanvas.gameObject.SetActive(false);
+    //        pauseMenu.gameObject.SetActive(false);
+    //        resumeMenu.gameObject.SetActive(false);
+    //        gameOverMenu.gameObject.SetActive(false);
+    //        HTPCanvas.gameObject.SetActive(false);
+    //        LoadingCanvas.gameObject.SetActive(false);
+    //    }
+    //}
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        // Reassign CanvasGroup if it's null or destroyed
+        if (transitionCanvasGroup == null)
+        {
+            transitionCanvasGroup = GameObject.Find("TransitionCanvasGroup")?.GetComponent<CanvasGroup>();
+            if (transitionCanvasGroup == null)
+            {
+                Debug.LogError("TransitionCanvasGroup not found in scene after reload!");
+            }
+        }
+
+        if (paintManager == null)
+        {
+            paintManager = FindObjectOfType<PaintManager>();
+            if (paintManager != null)
+                Debug.Log("✅ PaintManager re-linked after restart.");
+            else
+                Debug.LogWarning("⚠️ PaintManager not found after scene load!");
+        }
+
+        // Also reassign player, main camera, and canvases
+        player = GameObject.FindWithTag("Player");
+        main = Camera.main;
+    }
+
+
+
+
     void Start()
     {
         // Find WalletConnectManager in the scene
         walletConnectManager = FindObjectOfType<WalletConnectManager>();
         //loadingDots = loadingDots.GetComponent<LoadingDots>();
         if (walletConnectManager == null)
+        {
+            Debug.LogError("WalletConnectManager not found in the scene!");
+        }
+        paintManager = FindObjectOfType<PaintManager>();
+        //loadingDots = loadingDots.GetComponent<LoadingDots>();
+        if (paintManager == null)
         {
             Debug.LogError("WalletConnectManager not found in the scene!");
         }
@@ -119,15 +205,29 @@ public class GameManager : MonoBehaviour
         {
 
             AudioManager.Instance.PlayMenuMusic();
-            
-            // Normal start: show login canvas only
-            loginCanvas.gameObject.SetActive(true);
-            mainMenuCanvas.gameObject.SetActive(false);
-            pauseMenu.gameObject.SetActive(false);
-            resumeMenu.gameObject.SetActive(false);
-            gameOverMenu.gameObject.SetActive(false);
-            HTPCanvas.gameObject.SetActive(false);
-            LoadingCanvas.gameObject.SetActive(false);
+            if (isGameLoggedIn)
+            {
+                if (loginCanvas != null)
+                {
+                    loginCanvas.gameObject.SetActive(false);
+                }
+                mainMenuCanvas.gameObject.SetActive(true);
+                pauseMenu.gameObject.SetActive(false);
+                resumeMenu.gameObject.SetActive(false);
+                gameOverMenu.gameObject.SetActive(false);
+                HTPCanvas.gameObject.SetActive(false);
+                LoadingCanvas.gameObject.SetActive(false);
+            }
+            else
+            {
+                loginCanvas.gameObject.SetActive(true);
+                mainMenuCanvas.gameObject.SetActive(false);
+                pauseMenu.gameObject.SetActive(false);
+                resumeMenu.gameObject.SetActive(false);
+                gameOverMenu.gameObject.SetActive(false);
+                HTPCanvas.gameObject.SetActive(false);
+                LoadingCanvas.gameObject.SetActive(false);
+            }
             if (instructionCanvas != null)
             {
                 instructionCanvas.gameObject.SetActive(false);
@@ -193,6 +293,14 @@ public class GameManager : MonoBehaviour
         {
             redButton.onClick.AddListener(() => OnColorButtonClicked("red"));
         }
+        if (ghostButton != null)
+        {
+            ghostButton.onClick.AddListener(() => OnColorButtonClicked("ghost"));
+        }
+        if (brownButton != null)
+        {
+            brownButton.onClick.AddListener(() => OnColorButtonClicked("brown"));
+        }
 
         // Add listeners for instruction buttons
         if (nextButton != null)
@@ -215,6 +323,12 @@ public class GameManager : MonoBehaviour
         //    walletConnectManager.OnLoggedIn.AddListener(OnWalletLoggedIn);
         //}
     }
+
+    private void OnDestroy()
+    {
+        SceneManager.sceneLoaded -= OnSceneLoaded;
+    }
+
 
     void Update()
     {
@@ -268,6 +382,7 @@ public class GameManager : MonoBehaviour
         {
             loginCanvas.gameObject.SetActive(false);
             mainMenuCanvas.gameObject.SetActive(true);
+            isGameLoggedIn = true;
         }
     }
 
@@ -382,25 +497,6 @@ public class GameManager : MonoBehaviour
         pauseMenu.gameObject.SetActive(true);
     }
 
-    //public async Task GameOver()
-    //{
-    //    AudioManager.Instance.PlayGameOverMusic();
-    //    isGameStarted = false;
-    //    gameOverMenu.gameObject.SetActive(true);
-    //    pauseMenu.gameObject.SetActive(false);
-    //    Time.timeScale = 0f;
-    //    UpdateXPText(); // Update XP display on game over
-    //    UpdateGameOverText();
-    //    Debug.Log("updating wallet info");
-    //    UpdateGOMenuWalletInfo();
-    //    Debug.Log("submitting");
-    //    await SubmitScore();
-    //    Debug.Log("submitted");
-    //    //SetScore();
-    //}
-
-    // ... (other fields and methods remain unchanged)
-
    
 
     public async Task GameOver()
@@ -437,15 +533,142 @@ public class GameManager : MonoBehaviour
     void OnRestartButtonClicked()
     {
         AudioManager.Instance.PlayClickSound();
-        Restart();
+        RestartGame();
     }
 
-    void Restart()
+    public void ReturnToMainMenu()
     {
-        // Set flag to start immediately after reload
-        //shouldStartImmediately = false;
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+        ResetGameState();
+        StartCoroutine(ReturnToMainMenuWithTransition(SceneManager.GetActiveScene().name));
     }
+
+    private void ResetGameState()
+    {
+        AudioManager.Instance.StopAllMusic();   
+        totalXP = 0;
+        isGameStarted = false;
+        hasDied = false;
+        isGameLoggedIn  = true; // Keep logged in when returning to main menu
+    }
+
+    private IEnumerator ReturnToMainMenuWithTransition(string sceneName)
+    {
+        // fade in transition
+        AudioManager.Instance.PlayMenuMusic();
+        transitionCanvasGroup.gameObject.SetActive(true);
+        float elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / transitionDuration);
+            yield return null;
+        }
+        transitionCanvasGroup.alpha = 1f;
+
+        // load the scene
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        asyncLoad.allowSceneActivation = false;
+
+        while (asyncLoad.progress < 0.9f)
+        {
+            yield return null;
+        }
+        asyncLoad.allowSceneActivation = true;
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        // fade out transition
+        elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / transitionDuration);
+            yield return null;
+        }
+        transitionCanvasGroup.alpha = 0f;
+        transitionCanvasGroup.gameObject.SetActive(false);
+
+        // show the main menu instead of gameplay
+        loginCanvas.gameObject.SetActive(false);            // show login first (so user can log in again if needed)
+        mainMenuCanvas.gameObject.SetActive(true);         // show main menu
+        //gameModeMenuCanvas.SetActive(false);
+        leaderboardCanvas.gameObject.gameObject.SetActive(false);
+        resumeMenu.gameObject.SetActive(false);
+        pauseMenu.gameObject.SetActive(false);
+        gameOverMenu.gameObject.SetActive(false);
+        //gameWinCanvas.SetActive(false);
+        Time.timeScale = 0f;                    // keep the game paused until user starts
+        UpdateXPText(); 
+    }
+
+
+
+    public void RestartGame()
+    {
+        ResetGameState();
+        StartCoroutine(RestartLevelDirectly(SceneManager.GetActiveScene().name));
+    }
+
+    private IEnumerator RestartLevelDirectly(string sceneName)
+    {
+        // show loading/transition effect if you like
+        AudioManager.Instance.PlayGameplayMusic();
+        transitionCanvasGroup.gameObject.SetActive(true);
+        float elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / transitionDuration);
+            yield return null;
+        }
+        transitionCanvasGroup.alpha = 1f;
+
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        asyncLoad.allowSceneActivation = false;
+
+        while (asyncLoad.progress < 0.9f)
+        {
+            yield return null;
+        }
+        asyncLoad.allowSceneActivation = true;
+        while (!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+
+        // fade out transition
+        elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / transitionDuration);
+            yield return null;
+        }
+        transitionCanvasGroup.alpha = 0f;
+        transitionCanvasGroup.gameObject.SetActive(false);
+
+        // directly enter gameplay, skipping login/menu canvases
+        loginCanvas.gameObject.SetActive(false);
+        mainMenuCanvas.gameObject.SetActive(false);
+        //gameModeMenuCanvas.SetActive(false);
+        pauseMenu.gameObject.SetActive(true);
+        leaderboardCanvas.gameObject.SetActive(false);
+        gameOverMenu.gameObject.SetActive(false);
+        HTPCanvas.gameObject.SetActive(false);
+       
+        Time.timeScale = 1f;
+        isGameStarted = true;
+        UpdateXPText(); 
+    }
+
+
+
+
+
+
+
 
     public void OnBackToMainMenuButtonClicked()
     {
@@ -763,17 +986,17 @@ public class GameManager : MonoBehaviour
 
     public void ReadScore(int position)
     {
-        WalletConnectManager.Instance.ReadScore(position);
+        walletConnectManager.ReadScore(position);
     }
 
     public void Register(string name)
     {
-        WalletConnectManager.Instance.RegisterLeaderboardName(name);
+        walletConnectManager.RegisterLeaderboardName(name);
         
     }
 
     public void ReadName(uint position) { 
-        WalletConnectManager.Instance.ReadName(position);
+        walletConnectManager.ReadName(position);
     }
 
     public void ReadnRegister(string name) {
@@ -819,7 +1042,7 @@ public class GameManager : MonoBehaviour
         //await WalletConnectManager.Instance.GetScoreList();
         for (int i = 0; i < 5; i++)
         {
-            await WalletConnectManager.Instance.ReadScore(i);
+            await walletConnectManager.ReadScore(i);
         }
         //UpdateNameFields();
         UpdateScoreFields();
@@ -844,7 +1067,7 @@ public class GameManager : MonoBehaviour
 
     void UpdateNameFields()
     {
-        nameList = WalletConnectManager.Instance.NameList();
+        nameList = walletConnectManager.NameList();
 
         //for (int i = 0; i < 5; i++)
         //{
@@ -864,7 +1087,7 @@ public class GameManager : MonoBehaviour
 
     void UpdateScoreFields()
     {
-        scoreList = WalletConnectManager.Instance.ScoreList();
+        scoreList = walletConnectManager.ScoreList();
 
         for (int i = 0; i < 5; i++)
         {

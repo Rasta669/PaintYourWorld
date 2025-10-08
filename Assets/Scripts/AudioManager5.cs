@@ -84,7 +84,7 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    private void StopAllMusic()
+    public void StopAllMusic()
     {
         menuMusic.Stop();
         gameplayMusic.Stop();

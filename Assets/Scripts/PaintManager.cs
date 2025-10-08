@@ -40,7 +40,10 @@ public class PaintManager : MonoBehaviour
         { "purple", new ColorProperty { name = "Platform", paintColor = new Color(0.55f, 0.27f, 0.68f, 1f), lifetime = 30f } },
         { "blue", new ColorProperty { name = "Bouncy", bounceFactor = 6f, paintColor = new Color(0.2f, 0.6f, 0.9f, 1f), lifetime = 30f } },
         { "red", new ColorProperty { name = "Temporary", duration = 3f, paintColor = new Color(0.9f, 0.3f, 0.2f, 1f), lifetime = 30f } },
-        { "yellow", new ColorProperty { name = "Speed", speedBoost = 1.5f, paintColor = new Color(0.95f, 0.77f, 0.06f, 1f), lifetime = 30f } }
+        { "yellow", new ColorProperty { name = "Speed", speedBoost = 1.5f, paintColor = new Color(0.95f, 0.77f, 0.06f, 1f), lifetime = 30f } },
+        { "ghost", new ColorProperty { name = "Ghost", paintColor = new Color(0.9f, 0.9f, 0.9f, 0.8f), lifetime = 30f } },
+        { "brown", new ColorProperty { name = "Blocker", paintColor = new Color(0.36f, 0.25f, 0.2f, 1f), lifetime = 30f } },
+
     };
 
     //[SerializeField] private List<HiddenPath> hiddenPaths = new List<HiddenPath>();
@@ -149,6 +152,9 @@ public class PaintManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha2)) SetPaintColor("blue");
         if (Input.GetKeyDown(KeyCode.Alpha3)) SetPaintColor("red");
         if (Input.GetKeyDown(KeyCode.Alpha4)) SetPaintColor("yellow");
+        if (Input.GetKeyDown(KeyCode.Alpha5)) SetPaintColor("ghost");
+        if (Input.GetKeyDown(KeyCode.Alpha6)) SetPaintColor("brown");
+
 
         if (!isPainting)
         {
@@ -301,6 +307,48 @@ public class PaintManager : MonoBehaviour
     }
 
 
+    //private void CreatePaintParticles(Vector3 position, string colorType)
+    //{
+    //    int particleCount = GetParticleCountForColor(colorType);
+    //    GameObject particleSystemObj = Instantiate(particlePrefab, position, Quaternion.identity);
+    //    ParticleSystem particles = particleSystemObj.GetComponent<ParticleSystem>();
+
+    //    if (particles != null && colorProperties.TryGetValue(colorType, out ColorProperty props))
+    //    {
+    //        var main = particles.main;
+    //        main.startColor = props.paintColor;
+    //        main.loop = false;
+
+    //        // Ensure particles don’t live longer than expected
+    //        main.startLifetime = paintParticleLifetime;
+
+    //        switch (colorType)
+    //        {
+    //            case "red":
+    //                main.startLifetime = Mathf.Min(0.5f, paintParticleLifetime);
+    //                break;
+    //            case "yellow":
+    //                var velocity = particles.velocityOverLifetime;
+    //                velocity.enabled = true;
+    //                velocity.space = ParticleSystemSimulationSpace.World;
+
+    //                var xCurve = new AnimationCurve(new Keyframe(0f, 2f), new Keyframe(1f, 5f));
+    //                velocity.x = new ParticleSystem.MinMaxCurve(2.0f, xCurve);
+
+    //                var yCurve = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(1f, 0f));
+    //                velocity.y = new ParticleSystem.MinMaxCurve(0f, yCurve);
+    //                break;
+    //        }
+
+    //        var emission = particles.emission;
+    //        emission.SetBurst(0, new ParticleSystem.Burst(0f, (short)particleCount));
+    //        particles.Play(); // ← force it to play
+    //    }
+
+    //    Destroy(particleSystemObj, paintParticleLifetime + 0.5f); // Give time for all particles to finish
+    //}
+
+
     private void CreatePaintParticles(Vector3 position, string colorType)
     {
         int particleCount = GetParticleCountForColor(colorType);
@@ -312,8 +360,6 @@ public class PaintManager : MonoBehaviour
             var main = particles.main;
             main.startColor = props.paintColor;
             main.loop = false;
-
-            // Ensure particles don’t live longer than expected
             main.startLifetime = paintParticleLifetime;
 
             switch (colorType)
@@ -321,6 +367,7 @@ public class PaintManager : MonoBehaviour
                 case "red":
                     main.startLifetime = Mathf.Min(0.5f, paintParticleLifetime);
                     break;
+
                 case "yellow":
                     var velocity = particles.velocityOverLifetime;
                     velocity.enabled = true;
@@ -332,14 +379,19 @@ public class PaintManager : MonoBehaviour
                     var yCurve = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(1f, 0f));
                     velocity.y = new ParticleSystem.MinMaxCurve(0f, yCurve);
                     break;
+
+                case "ghost":
+                    main.startLifetime = Mathf.Min(0.5f, paintParticleLifetime);
+                    break;
+
             }
 
             var emission = particles.emission;
             emission.SetBurst(0, new ParticleSystem.Burst(0f, (short)particleCount));
-            particles.Play(); // ← force it to play
+            particles.Play();
         }
 
-        Destroy(particleSystemObj, paintParticleLifetime + 0.5f); // Give time for all particles to finish
+        Destroy(particleSystemObj, paintParticleLifetime + 0.5f);
     }
 
 
@@ -351,6 +403,8 @@ public class PaintManager : MonoBehaviour
             case "red": return 8;
             case "yellow": return 10;
             case "purple": return 10;
+            case "ghost": return 6;  
+            case "brown": return 14;  
             default: return 8;
         }
     }
@@ -409,6 +463,9 @@ public class PaintStroke : MonoBehaviour
     public float BounceFactor { get; private set; }
     public float SpeedBoost { get; private set; }
     public bool IsTemporary { get; private set; }
+
+    public bool IsGhost { get; private set; }
+
     public float Duration { get; private set; }
     public float RemainingTime { get; private set; }
 
@@ -440,6 +497,13 @@ public class PaintStroke : MonoBehaviour
                 case "yellow":
                     SpeedBoost = properties.speedBoost;
                     break;
+                case "ghost":
+                    IsGhost = true;
+                    break;
+                case "brown":
+                    gameObject.tag = "Blocker";
+                    break;
+
             }
 
             // Schedule destruction if lifetime is set

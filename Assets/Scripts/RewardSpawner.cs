@@ -164,7 +164,7 @@ public class RewardSpawner : MonoBehaviour
             return;
         }
 
-        gameManager = FindObjectOfType<GameManager>();
+        gameManager = GameManager.Instance;
         if (gameManager == null)
         {
             Debug.LogError("GameManager not found in scene!");
@@ -263,7 +263,7 @@ public class RewardSpawner : MonoBehaviour
 public class Reward : MonoBehaviour
 {
     private int xpValue;
-    private GameManager gameManager;
+    private GameManager gameManager ;
 
     public void Initialize(int value, GameManager gm)
     {

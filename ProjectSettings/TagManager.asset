@@ -9,6 +9,7 @@ TagManager:
   - gameOver
   - obstacle
   - Reward
+  - Blocker
   layers:
   - Default
   - TransparentFX
