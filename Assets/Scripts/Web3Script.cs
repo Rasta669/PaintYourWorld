@@ -130,14 +130,14 @@ public class WalletConnectManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
-
-        DontDestroyOnLoad(gameObject);
-
-        thirdwebManager = FindObjectOfType<ThirdwebManager>();
+ thirdwebManager = FindObjectOfType<ThirdwebManager>();
         if (thirdwebManager == null)
         {
             Debug.LogError("ThirdwebManager not found in the scene! Please add the ThirdwebManager prefab.");
         }
+        DontDestroyOnLoad(gameObject);
+
+       
 
 
         // Initialize GameManager
@@ -816,15 +816,7 @@ public class WalletConnectManager : MonoBehaviour
         }
 
         
-        if (DisconnectButton != null)
-        {
-            DisconnectButton.SetActive(true);
-            var buttonComponent = DisconnectButton.GetComponent<Button>();
-            if (buttonComponent != null)
-            {
-                buttonComponent.interactable = true;
-            }
-        }
+        
         if (ConnectedText != null)
         {
             ConnectedText.text = "Connected";

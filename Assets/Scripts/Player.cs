@@ -31,6 +31,11 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private ParticleSystem jumpParticles;
     [SerializeField] private ParticleSystem landParticles;
 
+    [Header("Health System")]
+    public int maxHealth = 3;
+    private int currentHealth;
+    private bool isDead = false;
+
     private bool wasGrounded;
     private PaintManager paintManager;
     private float horizontalInput;
@@ -56,6 +61,8 @@ public class PlayerController : MonoBehaviour
         isGrounded = true;
         wasGrounded = false;
         isJumping = false;
+        currentHealth = maxHealth;
+        UpdateHealthUI();
 
         rb.bodyType = RigidbodyType2D.Dynamic;
         rb.gravityScale = 1f;
@@ -386,8 +393,19 @@ public class PlayerController : MonoBehaviour
             }
         }
 
-        if (collision.gameObject.CompareTag("gameOver") || collision.gameObject.CompareTag("obstacle"))
+        if (collision.gameObject.CompareTag("obstacle"))
         {
+            AudioManager.Instance.PlayDieSound();
+            TakeDamage();
+            //isDead = true;
+            //UI.GameOver();
+        }
+
+        if (collision.gameObject.CompareTag("gameOver"))
+        {
+            AudioManager.Instance.PlayDieSound();
+            isDead = true;
+            currentHealth = 0;
             UI.GameOver();
         }
     }
@@ -404,5 +422,51 @@ public class PlayerController : MonoBehaviour
     {
         Gizmos.color = Color.blue;
         Gizmos.DrawWireCube(transform.position, playerSize);
+    }
+
+    private void UpdateHealthUI()
+    {
+        if (UI != null)
+        {
+            UI.UpdatePlayerHealth(currentHealth);
+        }
+    }
+
+    public bool IsDead()
+    {
+        return isDead;
+    }
+
+
+    public void ResetHealth()
+    {
+        currentHealth = maxHealth;
+        isDead = false;
+        UpdateHealthUI();
+    }
+
+    public int GetHealth()
+    {
+
+        return currentHealth;
+    }
+
+    private void TakeDamage()
+    {
+        if (isDead) return;
+        AudioManager.Instance.PlayDieSound();
+        currentHealth = Mathf.Max(0, currentHealth - 1);
+        UpdateHealthUI();
+        //bloodParticle.Play();
+
+        if (currentHealth <= 0)
+        {
+            isDead = true;
+            UI.GameOver();
+        }
+        //else
+        //{
+        //    characterAnimator.PlayHurtAnimation();
+        //}
     }
 }

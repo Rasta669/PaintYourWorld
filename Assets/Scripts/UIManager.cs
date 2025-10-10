@@ -50,6 +50,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI walletAddressText; // New: Displays wallet address in pause menu
     [SerializeField] private TextMeshProUGUI claimedTokenText; // New: Displays claimed token balance in pause menu
     [SerializeField] private TextMeshProUGUI GOclaimedTokenText; // New: Displays claimed token balance in pause menu
+    [SerializeField] private List<Image> heartImages;
     private TextMeshProUGUI _rankText;
     private Vector3 initialPlayerPosition; // Store player's starting position
     //private static bool shouldStartImmediately = false; // Flag for immediate start after restart
@@ -249,6 +250,7 @@ public class GameManager : MonoBehaviour
 
         // Initialize pause menu wallet and token displays
         UpdatePauseMenuWalletInfo();
+
 
         // Add listeners to buttons (excluding login buttons as they are set in Inspector)
         if (startButton != null)
@@ -501,10 +503,12 @@ public class GameManager : MonoBehaviour
 
     public async Task GameOver()
     {
-        AudioManager.Instance.PlayGameOverMusic();
+        
+        
         isGameStarted = false;
         hasDied = true;
         gameOverMenu.gameObject.SetActive(true);
+        AudioManager.Instance.PlayGameOverMusic();
         pauseMenu.gameObject.SetActive(false);
         Time.timeScale = 0f;
         UpdateXPText(); // Update XP display on game over
@@ -544,7 +548,8 @@ public class GameManager : MonoBehaviour
 
     private void ResetGameState()
     {
-        AudioManager.Instance.StopAllMusic();   
+        AudioManager.Instance.StopAllMusic(); 
+        ResetPlayerHealth();
         totalXP = 0;
         isGameStarted = false;
         hasDied = false;
@@ -704,6 +709,7 @@ public class GameManager : MonoBehaviour
 
     public void AddXP(int amount)
     {
+        AudioManager.Instance.PlayKeyAcquiredSound();
         totalXP += amount;
         UpdateXPText();
     }
@@ -972,7 +978,7 @@ public class GameManager : MonoBehaviour
         Debug.Log($"Your rank....");
         //_rankText.text = $"Global Rank: ...";
         Debug.Log($"..");
-        await WalletConnectManager.Instance.SubmitScore(totalXP);
+        await walletConnectManager.SubmitScore(totalXP);
         Debug.Log($"submitted score....");
         //int rank = await WalletConnectManager.Instance.GetRank();
         //Debug.Log($"Extracted rank.");
@@ -1100,5 +1106,25 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlayClickSound();
         mainMenuCanvas.gameObject.SetActive(false);
         HTPCanvas.gameObject.SetActive(true);
+    }
+
+    public void UpdatePlayerHealth(int health)
+    {
+        if (heartImages != null && heartImages.Count >= 3)
+        {
+            for (int i = 0; i < heartImages.Count; i++)
+            {
+                heartImages[i].enabled = i < health;
+            }
+        }
+    }
+
+    private void ResetPlayerHealth()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        if (player != null)
+        {
+            player.ResetHealth();
+        }
     }
 }
