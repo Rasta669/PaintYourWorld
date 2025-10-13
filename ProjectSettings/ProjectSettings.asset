@@ -671,7 +671,7 @@ PlayerSettings:
   webGLCloseOnQuit: 0
   webWasm2023: 0
   scriptingDefineSymbols:
-    WebGL: 
+    WebGL: THIRDWEB_REOWN
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend:
