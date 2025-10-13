@@ -178,6 +178,12 @@ public class RewardSpawner : MonoBehaviour
         StartCoroutine(SpawnRewardsEndlessly());
     }
 
+    public void SetPlayer(GameObject newPlayer)
+    {
+        player = newPlayer;
+        ValidatePlayerSetup();
+    }
+
     void ValidatePlayerSetup()
     {
         //Debug.Log($"Validating player setup: {player.name}");
@@ -290,4 +296,6 @@ public class Reward : MonoBehaviour
             Destroy(gameObject);
         }
     }
+
+
 }

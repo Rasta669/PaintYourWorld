@@ -271,7 +271,7 @@ public class WalletConnectManager : MonoBehaviour
             }
 
             var options = new WalletOptions(
-                provider: WalletProvider.WalletConnectWallet,
+                provider: WalletProvider.ReownWallet,
                 chainId: 84532
             );
 
@@ -461,156 +461,156 @@ public class WalletConnectManager : MonoBehaviour
         }
     }
 
-    public async void SendEth()
-    {
-        if (thirdwebManager == null || wallet == null)
-        {
-            Debug.LogError("Cannot send ETH: ThirdwebManager or wallet not initialized.");
-            return;
-        }
+    //public async void SendEth()
+    //{
+    //    if (thirdwebManager == null || wallet == null)
+    //    {
+    //        Debug.LogError("Cannot send ETH: ThirdwebManager or wallet not initialized.");
+    //        return;
+    //    }
 
-        if (string.IsNullOrEmpty(ToAddress) || !ToAddress.StartsWith("0x") || ToAddress.Length != 42)
-        {
-            Debug.LogError("Invalid recipient address.");
-            return;
-        }
+    //    if (string.IsNullOrEmpty(ToAddress) || !ToAddress.StartsWith("0x") || ToAddress.Length != 42)
+    //    {
+    //        Debug.LogError("Invalid recipient address.");
+    //        return;
+    //    }
 
-        if (string.IsNullOrEmpty(Amount) || !float.TryParse(Amount, out float ethAmount) || ethAmount <= 0)
-        {
-            Debug.LogError("Invalid ETH amount.");
-            return;
-        }
+    //    if (string.IsNullOrEmpty(Amount) || !float.TryParse(Amount, out float ethAmount) || ethAmount <= 0)
+    //    {
+    //        Debug.LogError("Invalid ETH amount.");
+    //        return;
+    //    }
 
-        try
-        {
-            Debug.Log($"Sending {Amount} ETH to {ToAddress}...");
-            if (wallet is WalletConnectWallet walletConnect)
-            {
-                await walletConnect.EnsureCorrectNetwork(ActiveChainId);
-            }
-            await Task.Delay(5000);
-            string weiAmountString = Utils.ToWei(Amount);
-            BigInteger weiAmount = BigInteger.Parse(weiAmountString);
-            var transactionResult = await wallet.Transfer(ActiveChainId, ToAddress, weiAmount);
-            Debug.Log($"ETH sent! Transaction Hash: {transactionResult.TransactionHash}");
+    //    try
+    //    {
+    //        Debug.Log($"Sending {Amount} ETH to {ToAddress}...");
+    //        if (wallet is WalletConnectWallet walletConnect)
+    //        {
+    //            await walletConnect.EnsureCorrectNetwork(ActiveChainId);
+    //        }
+    //        await Task.Delay(5000);
+    //        string weiAmountString = Utils.ToWei(Amount);
+    //        BigInteger weiAmount = BigInteger.Parse(weiAmountString);
+    //        var transactionResult = await wallet.Transfer(ActiveChainId, ToAddress, weiAmount);
+    //        Debug.Log($"ETH sent! Transaction Hash: {transactionResult.TransactionHash}");
 
-            var balance = await wallet.GetBalance(chainId: ActiveChainId);
-            var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 2, addCommas: true);
-            if (EthBalanceText != null)
-            {
-                EthBalanceText.gameObject.SetActive(true);
-                EthBalanceText.text = $"ETH: {balanceEth}";
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Failed to send ETH: {ex.Message}");
-        }
-    }
+    //        var balance = await wallet.GetBalance(chainId: ActiveChainId);
+    //        var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 2, addCommas: true);
+    //        if (EthBalanceText != null)
+    //        {
+    //            EthBalanceText.gameObject.SetActive(true);
+    //            EthBalanceText.text = $"ETH: {balanceEth}";
+    //        }
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"Failed to send ETH: {ex.Message}");
+    //    }
+    //}
 
-    public async void SendCustomToken()
-    {
-        if (thirdwebManager == null || wallet == null)
-        {
-            Debug.LogError("Cannot send token: ThirdwebManager or wallet not initialized.");
-            return;
-        }
+    //public async void SendCustomToken()
+    //{
+    //    if (thirdwebManager == null || wallet == null)
+    //    {
+    //        Debug.LogError("Cannot send token: ThirdwebManager or wallet not initialized.");
+    //        return;
+    //    }
 
-        if (string.IsNullOrEmpty(TokenContractAddress) || string.IsNullOrEmpty(TokenRecipientAddress))
-        {
-            Debug.LogError("Invalid token contract or recipient address.");
-            return;
-        }
+    //    if (string.IsNullOrEmpty(TokenContractAddress) || string.IsNullOrEmpty(TokenRecipientAddress))
+    //    {
+    //        Debug.LogError("Invalid token contract or recipient address.");
+    //        return;
+    //    }
 
-        if (string.IsNullOrEmpty(TokenAmount) || !float.TryParse(TokenAmount, out float tokenAmount) || tokenAmount <= 0)
-        {
-            Debug.LogError("Invalid token amount.");
-            return;
-        }
+    //    if (string.IsNullOrEmpty(TokenAmount) || !float.TryParse(TokenAmount, out float tokenAmount) || tokenAmount <= 0)
+    //    {
+    //        Debug.LogError("Invalid token amount.");
+    //        return;
+    //    }
 
-        try
-        {
-            Debug.Log($"Sending {TokenAmount} {TokenName} to {TokenRecipientAddress}...");
-            if (wallet is WalletConnectWallet walletConnect)
-            {
-                await walletConnect.EnsureCorrectNetwork(ActiveChainId);
-            }
-            await Task.Delay(5000);
-            var contract = await ThirdwebManager.Instance.GetContract(TokenContractAddress, ActiveChainId);
-            var decimals = 2;
-            string tokenAmountInWei = Utils.ToWei(TokenAmount);
-            BigInteger tokenAmountBigInt = BigInteger.Parse(tokenAmountInWei);
-            var transactionResult = await contract.ERC20_Transfer(wallet, TokenRecipientAddress, tokenAmountBigInt);
-            Debug.Log($"Token sent! Transaction Hash: {transactionResult.TransactionHash}");
+    //    try
+    //    {
+    //        Debug.Log($"Sending {TokenAmount} {TokenName} to {TokenRecipientAddress}...");
+    //        if (wallet is WalletConnectWallet walletConnect)
+    //        {
+    //            await walletConnect.EnsureCorrectNetwork(ActiveChainId);
+    //        }
+    //        await Task.Delay(5000);
+    //        var contract = await ThirdwebManager.Instance.GetContract(TokenContractAddress, ActiveChainId);
+    //        var decimals = 2;
+    //        string tokenAmountInWei = Utils.ToWei(TokenAmount);
+    //        BigInteger tokenAmountBigInt = BigInteger.Parse(tokenAmountInWei);
+    //        var transactionResult = await contract.ERC20_Transfer(wallet, TokenRecipientAddress, tokenAmountBigInt);
+    //        Debug.Log($"Token sent! Transaction Hash: {transactionResult.TransactionHash}");
 
-            var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
-            var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-            if (CustomTokenBalanceText != null)
-            {
-                CustomTokenBalanceText.gameObject.SetActive(true);
-                CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Failed to send {TokenName}: {ex.Message}");
-        }
-    }
+    //        var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
+    //        var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+    //        if (CustomTokenBalanceText != null)
+    //        {
+    //            CustomTokenBalanceText.gameObject.SetActive(true);
+    //            CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
+    //        }
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"Failed to send {TokenName}: {ex.Message}");
+    //    }
+    //}
     [Obsolete]
-    public async void ClaimToken()
-    {
+    //public async void ClaimToken()
+    //{
         
-        try
-        {
-            if (ClaimButton != null) ClaimButton.interactable = false;
-            if (ClaimedTokenBalanceText != null)
-            {
-                ClaimedTokenBalanceText.gameObject.SetActive(true);
-                ClaimedTokenBalanceText.text = "Claiming...";
-            }
+    //    try
+    //    {
+    //        if (ClaimButton != null) ClaimButton.interactable = false;
+    //        if (ClaimedTokenBalanceText != null)
+    //        {
+    //            ClaimedTokenBalanceText.gameObject.SetActive(true);
+    //            ClaimedTokenBalanceText.text = "Claiming...";
+    //        }
 
-            float totalXP = GameManager.GetTotalXP();
-            decimal tokenAmount = (decimal)totalXP;
-            ClaimTokenAmount = tokenAmount.ToString();
-            var contract = await ThirdwebManager.Instance.GetContract(ClaimTokenContractAddress, ActiveChainId);
-            var decimals = 2;
-            string claimAmountInWei = Utils.ToWei(tokenAmount.ToString());
-            Debug.Log($"Claiming {tokenAmount} tokens ({claimAmountInWei} wei) based on {totalXP} XP");
+    //        float totalXP = GameManager.GetTotalXP();
+    //        decimal tokenAmount = (decimal)totalXP;
+    //        ClaimTokenAmount = tokenAmount.ToString();
+    //        var contract = await ThirdwebManager.Instance.GetContract(ClaimTokenContractAddress, ActiveChainId);
+    //        var decimals = 2;
+    //        string claimAmountInWei = Utils.ToWei(tokenAmount.ToString());
+    //        Debug.Log($"Claiming {tokenAmount} tokens ({claimAmountInWei} wei) based on {totalXP} XP");
 
-            if (wallet is WalletConnectWallet walletConnect)
-            {
-                await walletConnect.EnsureCorrectNetwork(ActiveChainId);
-            }
-            //await Task.Delay(5000);
+    //        if (wallet is WalletConnectWallet walletConnect)
+    //        {
+    //            await walletConnect.EnsureCorrectNetwork(ActiveChainId);
+    //        }
+    //        //await Task.Delay(5000);
 
-            var transactionResult = await contract.DropERC20_Claim(wallet, walletAddress, ClaimTokenAmount);
-            //var transactionResult = await contract.TokenERC20_MintTo(wallet, walletAddress, ClaimTokenAmount);
+    //        var transactionResult = await contract.DropERC20_Claim(wallet, walletAddress, ClaimTokenAmount);
+    //        //var transactionResult = await contract.TokenERC20_MintTo(wallet, walletAddress, ClaimTokenAmount);
            
-            //var transactionResult = await contract.Write(wallet, "claim", 0, ClaimTokenAmount);
+    //        //var transactionResult = await contract.Write(wallet, "claim", 0, ClaimTokenAmount);
 
-            Debug.Log($"Tokens claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
-            //await Task.Delay(5000);
+    //        Debug.Log($"Tokens claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
+    //        //await Task.Delay(5000);
 
-            var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
-            var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-            Debug.Log($"Updated token balance for {walletAddress}: {tokenBalanceFormatted}");
-            if (ClaimedTokenBalanceText != null)
-            {
-                ClaimedTokenBalanceText.text = $"Claimed: {totalXP} Color";
-                ClaimedTokenBalanceText.text = $"Color: {tokenBalanceFormatted}";
-            }
-            if (ClaimButton != null) ClaimButton.interactable = false;
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogError($"Failed to claim tokens: {ex.Message}");
-            if (ClaimedTokenBalanceText != null)
-            {
-                ClaimedTokenBalanceText.text = $"Claim Failed: {ex.Message}";
-            }
-            if (ClaimButton != null) ClaimButton.interactable = true;
-        }
-    }
+    //        var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
+    //        var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+    //        Debug.Log($"Updated token balance for {walletAddress}: {tokenBalanceFormatted}");
+    //        if (ClaimedTokenBalanceText != null)
+    //        {
+    //            ClaimedTokenBalanceText.text = $"Claimed: {totalXP} Color";
+    //            ClaimedTokenBalanceText.text = $"Color: {tokenBalanceFormatted}";
+    //        }
+    //        if (ClaimButton != null) ClaimButton.interactable = false;
+    //    }
+    //    catch (System.Exception ex)
+    //    {
+    //        Debug.LogError($"Failed to claim tokens: {ex.Message}");
+    //        if (ClaimedTokenBalanceText != null)
+    //        {
+    //            ClaimedTokenBalanceText.text = $"Claim Failed: {ex.Message}";
+    //        }
+    //        if (ClaimButton != null) ClaimButton.interactable = true;
+    //    }
+    //}
 
     public async void ConnectWithEcosystem()
     {
@@ -757,16 +757,9 @@ public class WalletConnectManager : MonoBehaviour
             ConnectedText.gameObject.SetActive(true);
             ConnectedText.text = "Connecting...";
         }
-        if (DisconnectButton != null)
-        {
-            var disconnectButton = DisconnectButton.GetComponent<Button>();
-            if (disconnectButton != null)
-            {
-                disconnectButton.interactable = false;
-            }
-        }
+       
 
-        AuthProvider provider = AuthProvider.Google;
+        AuthProvider provider = AuthProvider.Farcaster;
         switch (authProvider)
         {
             case "google":
@@ -778,15 +771,22 @@ public class WalletConnectManager : MonoBehaviour
             case "facebook":
                 provider = AuthProvider.Facebook;
                 break;
+            case "farcaster":
+                provider = AuthProvider.Farcaster;
+                break;
         }
+        Debug.Log($"Wallet provider: {authProvider}");
+        // Initialize client with clientId (not secretKey)
+        //var client = ThirdwebClient.Create(clientId: "your_client_id");
 
+        // Use this client in your ThirdwebManager or wallet connection logic
         var connection = new WalletOptions(
             provider: WalletProvider.InAppWallet,
             chainId: 84532,
             inAppWalletOptions: new InAppWalletOptions(authprovider: provider),
             smartWalletOptions: new SmartWalletOptions(sponsorGas: true)
         );
-
+        Debug.Log($"Wallet chainid: {ActiveChainId}");
         wallet = await ThirdwebManager.Instance.ConnectWallet(connection);
         walletAddress = await wallet.GetAddress();
 
@@ -831,6 +831,73 @@ public class WalletConnectManager : MonoBehaviour
         GameManager.OnWalletLoggedIn();
     }
 
+    public async void LoginWithReown()
+    {
+        if (ConnectedText != null)
+        {
+            ConnectedText.gameObject.SetActive(true);
+            ConnectedText.text = "Connecting...";
+        }
+        var reownOptions = new ReownOptions(
+            projectId: "1c367b6687847515ab0a7b9b2f32cb59",
+            name: "Paint Your World",
+            description: "thirdweb powered experience",
+            url: "https://pyw-host.vercel.app/",
+            iconUrl: "https://mygame.example/icon.png",
+            includedWalletIds: new[] { "eip155:1:metamask" },
+            excludedWalletIds: null
+        );
+
+        var walletOptions = new WalletOptions(
+            provider: WalletProvider.ReownWallet,
+            chainId: 84532,
+            reownOptions: reownOptions
+        );
+
+        var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+        walletAddress = await wallet.GetAddress();
+
+        OnLoggedIn?.Invoke(walletAddress);
+
+        var balance = await wallet.GetBalance(chainId: ActiveChainId);
+        var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 2, addCommas: true);
+        //Debug.Log($"Wallet balance: {balanceEth}");
+        if (EthBalanceText != null)
+        {
+            EthBalanceText.gameObject.SetActive(true);
+            EthBalanceText.text = $"ETH: {balanceEth}";
+        }
+
+        if (!string.IsNullOrEmpty(TokenContractAddress))
+        {
+            var contract = await ThirdwebManager.Instance.GetContract(TokenContractAddress, ActiveChainId);
+            var decimals = 2;
+            var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
+            var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+            //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+            if (CustomTokenBalanceText != null)
+            {
+                CustomTokenBalanceText.gameObject.SetActive(true);
+                CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
+            }
+        }
+
+
+
+        if (ConnectedText != null)
+        {
+            ConnectedText.text = "Connected";
+        }
+        if (AddressText != null && !string.IsNullOrEmpty(walletAddress))
+        {
+            AddressText.gameObject.SetActive(true);
+            string shortAddress = $"{walletAddress.Substring(0, 3)}...{walletAddress.Substring(walletAddress.Length - 3)}";
+            AddressText.text = shortAddress;
+        }
+
+        GameManager.OnWalletLoggedIn();
+
+    }
     public async void GetCustomTokenBalanceAsync()
     {
         if (thirdwebManager == null)

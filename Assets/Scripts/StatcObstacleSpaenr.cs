@@ -47,4 +47,20 @@ public class FixedXObstacleSpawner2D : MonoBehaviour
         // Prepare next X spawn point
         nextSpawnX += spawnXSpacing;
     }
+
+
+    public void SetPlayer(Transform newPlayer)
+    {
+        if (newPlayer == null)
+        {
+            Debug.LogError("Cannot set player: newPlayer is null");
+            return;
+        }
+
+        player = newPlayer;
+        hasSpawnedFirst = false; // Reset first spawn
+        nextSpawnX = 0f;
+
+        Debug.Log($"ObstacleSpawner player set to {player.name}");
+    }
 }

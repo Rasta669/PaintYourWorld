@@ -63,12 +63,12 @@ public class PaintManager : MonoBehaviour
             playerAnimator = player.GetComponent<Animator>();
             if (playerAnimator == null)
             {
-                Debug.LogError("Player GameObject does not have an Animator component!");
+                Debug.LogWarning("Player GameObject does not have an Animator component!");
             }
         }
         else
         {
-            Debug.LogError("Player reference is not set in PaintManager!");
+            Debug.LogWarning("Player reference is not set in PaintManager!");
         }
 
         if (paintParticles != null)
@@ -78,6 +78,28 @@ public class PaintManager : MonoBehaviour
             paintParticles.Stop();
         }
     }
+
+    public void SetPlayer(GameObject newPlayer)
+    {
+        if (newPlayer == null)
+        {
+            Debug.LogError("Cannot set player: newPlayer is null");
+            return;
+        }
+
+        player = newPlayer;
+
+        // Add/assign Animator automatically
+        playerAnimator = player.GetComponent<Animator>();
+        if (playerAnimator == null)
+        {
+            playerAnimator = player.AddComponent<Animator>();
+            Debug.LogWarning("Player did not have an Animator; one was added automatically.");
+        }
+
+        Debug.Log($"Player set to {player.name}");
+    }
+
 
     private void Update()
     {
@@ -306,49 +328,6 @@ public class PaintManager : MonoBehaviour
         return newPlatform;
     }
 
-
-    //private void CreatePaintParticles(Vector3 position, string colorType)
-    //{
-    //    int particleCount = GetParticleCountForColor(colorType);
-    //    GameObject particleSystemObj = Instantiate(particlePrefab, position, Quaternion.identity);
-    //    ParticleSystem particles = particleSystemObj.GetComponent<ParticleSystem>();
-
-    //    if (particles != null && colorProperties.TryGetValue(colorType, out ColorProperty props))
-    //    {
-    //        var main = particles.main;
-    //        main.startColor = props.paintColor;
-    //        main.loop = false;
-
-    //        // Ensure particles don’t live longer than expected
-    //        main.startLifetime = paintParticleLifetime;
-
-    //        switch (colorType)
-    //        {
-    //            case "red":
-    //                main.startLifetime = Mathf.Min(0.5f, paintParticleLifetime);
-    //                break;
-    //            case "yellow":
-    //                var velocity = particles.velocityOverLifetime;
-    //                velocity.enabled = true;
-    //                velocity.space = ParticleSystemSimulationSpace.World;
-
-    //                var xCurve = new AnimationCurve(new Keyframe(0f, 2f), new Keyframe(1f, 5f));
-    //                velocity.x = new ParticleSystem.MinMaxCurve(2.0f, xCurve);
-
-    //                var yCurve = new AnimationCurve(new Keyframe(0f, 0f), new Keyframe(1f, 0f));
-    //                velocity.y = new ParticleSystem.MinMaxCurve(0f, yCurve);
-    //                break;
-    //        }
-
-    //        var emission = particles.emission;
-    //        emission.SetBurst(0, new ParticleSystem.Burst(0f, (short)particleCount));
-    //        particles.Play(); // ← force it to play
-    //    }
-
-    //    Destroy(particleSystemObj, paintParticleLifetime + 0.5f); // Give time for all particles to finish
-    //}
-
-
     private void CreatePaintParticles(Vector3 position, string colorType)
     {
         int particleCount = GetParticleCountForColor(colorType);
@@ -437,10 +416,7 @@ public class PaintManager : MonoBehaviour
         return brushStrokes;
     }
 
-    //public List<HiddenPath> GetRevealedPaths()
-    //{
-    //    return hiddenPaths.FindAll(path => path.revealed);
-    //}
+  
 
     public void ClearAllPaint()
     {

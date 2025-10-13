@@ -1,498 +1,357 @@
 using System.Collections.Generic;
+using System.Numerics;
 using Newtonsoft.Json;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 namespace Thirdweb.Unity.Examples
 {
-    [System.Serializable]
-    public class WalletPanelUI
-    {
-        public string Identifier;
-        public GameObject Panel;
-        public Button Action1Button;
-        public Button Action2Button;
-        public Button Action3Button;
-        public Button BackButton;
-        public Button NextButton;
-        public TMP_Text LogText;
-        public TMP_InputField InputField;
-        public Button InputFieldSubmitButton;
-    }
-
+    /// <summary>
+    /// A simple manager to demonstrate core functionality of the thirdweb SDK.
+    /// This is not production-ready code. Do not use this in production.
+    /// </summary>
     public class PlaygroundManager : MonoBehaviour
     {
-        [field: SerializeField, Header("Wallet Options")]
-        private ulong ActiveChainId = 421614;
+        #region Inspector
 
-        [field: SerializeField]
-        private bool WebglForceMetamaskExtension = false;
+        public bool AlwaysUpgradeToSmartWallet;
+        public ulong ChainId;
+        public string Email;
+        public string Phone;
+        public Transform ActionButtonParent;
+        public GameObject ActionButtonPrefab;
+        public GameObject LogPanel;
 
-        [field: SerializeField, Header("Connect Wallet")]
-        private GameObject ConnectWalletPanel;
+        #endregion
 
-        [field: SerializeField]
-        private Button PrivateKeyWalletButton;
+        #region Initialization
 
-        [field: SerializeField]
-        private Button EcosystemWalletButton;
-
-        [field: SerializeField]
-        private Button WalletConnectButton;
-
-        [field: SerializeField, Header("Wallet Panels")]
-        private List<WalletPanelUI> WalletPanels;
-
-        private ThirdwebChainData _chainDetails;
+        private Dictionary<string, UnityAction> _actionMappings;
 
         private void Awake()
         {
-            InitializePanels();
-        }
-
-        private async void Start()
-        {
-            try
+            this.LogPanel.SetActive(false);
+            this._actionMappings = new Dictionary<string, UnityAction>
             {
-                _chainDetails = await Utils.GetChainMetadata(client: ThirdwebManager.Instance.Client, chainId: ActiveChainId);
+                // Wallet Connection
+                { "Guest Wallet (Smart)", this.Wallet_Guest },
+                { "Social Wallet", this.Wallet_Social },
+                { "Email Wallet", this.Wallet_Email },
+                { "Phone Wallet", this.Wallet_Phone },
+                { "External Wallet", this.Wallet_External },
+                // Wallet Actions
+                { "Sign Message", this.WalletAction_SignMessage },
+                { "Sign SIWE", this.WalletAction_SIWE },
+                { "Sign Typed Data", this.WalletAction_SignTypedData },
+                { "Get Balance", this.WalletAction_GetBalance },
+                { "Send Assets", this.WalletAction_Transfer },
+                // Contract Interaction
+                { "Read Contract (Ext)", this.Contract_Read },
+                { "Write Contract (Ext)", this.Contract_Write },
+                { "Read Contract (Raw)", this.Contract_ReadCustom },
+                { "Write Contract (Raw)", this.Contract_WriteCustom },
+                { "Prepare Tx (Low Lvl)", this.Contract_PrepareTransaction },
+            };
+
+            foreach (Transform child in this.ActionButtonParent)
+            {
+                Destroy(child.gameObject);
             }
-            catch
+
+            foreach (var action in this._actionMappings)
             {
-                _chainDetails = new ThirdwebChainData()
-                {
-                    NativeCurrency = new ThirdwebChainNativeCurrency()
-                    {
-                        Decimals = 18,
-                        Name = "ETH",
-                        Symbol = "ETH"
-                    }
-                };
-            }
-        }
-
-        private void InitializePanels()
-        {
-            CloseAllPanels();
-
-            ConnectWalletPanel.SetActive(true);
-
-            PrivateKeyWalletButton.onClick.RemoveAllListeners();
-            PrivateKeyWalletButton.onClick.AddListener(() =>
-            {
-                var options = GetWalletOptions(WalletProvider.PrivateKeyWallet);
-                ConnectWallet(options);
-            });
-
-            EcosystemWalletButton.onClick.RemoveAllListeners();
-            EcosystemWalletButton.onClick.AddListener(() => InitializeEcosystemWalletPanel());
-
-            WalletConnectButton.onClick.RemoveAllListeners();
-            WalletConnectButton.onClick.AddListener(() =>
-            {
-                var options = GetWalletOptions(WalletProvider.WalletConnectWallet);
-                ConnectWallet(options);
-            });
-        }
-
-        private async void ConnectWallet(WalletOptions options)
-        {
-            // Connect the wallet
-
-            var internalWalletProvider = options.Provider == WalletProvider.MetaMaskWallet ? WalletProvider.WalletConnectWallet : options.Provider;
-            var currentPanel = WalletPanels.Find(panel => panel.Identifier == internalWalletProvider.ToString());
-
-            Log(currentPanel.LogText, $"Connecting...");
-
-            var wallet = await ThirdwebManager.Instance.ConnectWallet(options);
-
-            // Initialize the wallet panel
-
-            CloseAllPanels();
-
-            // Setup actions
-
-            ClearLog(currentPanel.LogText);
-            currentPanel.Panel.SetActive(true);
-
-            currentPanel.BackButton.onClick.RemoveAllListeners();
-            currentPanel.BackButton.onClick.AddListener(InitializePanels);
-
-            currentPanel.NextButton.onClick.RemoveAllListeners();
-            currentPanel.NextButton.onClick.AddListener(InitializeContractsPanel);
-
-            currentPanel.Action1Button.onClick.RemoveAllListeners();
-            currentPanel.Action1Button.onClick.AddListener(async () =>
-            {
-                var address = await wallet.GetAddress();
-                address.CopyToClipboard();
-                Log(currentPanel.LogText, $"Address: {address}");
-            });
-
-            currentPanel.Action2Button.onClick.RemoveAllListeners();
-            currentPanel.Action2Button.onClick.AddListener(async () =>
-            {
-                var message = "Hello World!";
-                var signature = await wallet.PersonalSign(message);
-                Log(currentPanel.LogText, $"Signature: {signature}");
-            });
-
-            currentPanel.Action3Button.onClick.RemoveAllListeners();
-            currentPanel.Action3Button.onClick.AddListener(async () =>
-            {
-                LoadingLog(currentPanel.LogText);
-                var balance = await wallet.GetBalance(chainId: ActiveChainId);
-                var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 4, addCommas: true);
-                Log(currentPanel.LogText, $"Balance: {balanceEth} {_chainDetails.NativeCurrency.Symbol}");
-            });
-        }
-
-        private WalletOptions GetWalletOptions(WalletProvider provider)
-        {
-            switch (provider)
-            {
-                case WalletProvider.PrivateKeyWallet:
-                    return new WalletOptions(provider: WalletProvider.PrivateKeyWallet, chainId: ActiveChainId);
-                case WalletProvider.EcosystemWallet:
-                    var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", authprovider: AuthProvider.Google);
-                    return new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                case WalletProvider.WalletConnectWallet:
-                    var externalWalletProvider =
-                        Application.platform == RuntimePlatform.WebGLPlayer && WebglForceMetamaskExtension ? WalletProvider.MetaMaskWallet : WalletProvider.WalletConnectWallet;
-                    return new WalletOptions(provider: externalWalletProvider, chainId: ActiveChainId);
-                default:
-                    throw new System.NotImplementedException("Wallet provider not implemented for this example.");
+                var button = Instantiate(this.ActionButtonPrefab, this.ActionButtonParent);
+                button.GetComponentInChildren<TMP_Text>().text = action.Key;
+                button.GetComponent<Button>().onClick.AddListener(action.Value);
             }
         }
 
-        private void InitializeEcosystemWalletPanel()
+        private void LogPlayground(string message)
         {
-            var panel = WalletPanels.Find(walletPanel => walletPanel.Identifier == "EcosystemWallet_Authentication");
-
-            CloseAllPanels();
-
-            ClearLog(panel.LogText);
-            panel.Panel.SetActive(true);
-
-            panel.BackButton.onClick.RemoveAllListeners();
-            panel.BackButton.onClick.AddListener(InitializePanels);
-
-            // Email
-            panel.Action1Button.onClick.RemoveAllListeners();
-            panel.Action1Button.onClick.AddListener(() =>
-            {
-                InitializeEcosystemWalletPanel_Email();
-            });
-
-            // Phone
-            panel.Action2Button.onClick.RemoveAllListeners();
-            panel.Action2Button.onClick.AddListener(() =>
-            {
-                InitializeEcosystemWalletPanel_Phone();
-            });
-
-            // Socials
-            panel.Action3Button.onClick.RemoveAllListeners();
-            panel.Action3Button.onClick.AddListener(() =>
-            {
-                InitializeEcosystemWalletPanel_Socials();
-            });
-        }
-
-        private void InitializeEcosystemWalletPanel_Email()
-        {
-            var panel = WalletPanels.Find(walletPanel => walletPanel.Identifier == "EcosystemWallet_Email");
-
-            CloseAllPanels();
-
-            ClearLog(panel.LogText);
-            panel.Panel.SetActive(true);
-
-            panel.BackButton.onClick.RemoveAllListeners();
-            panel.BackButton.onClick.AddListener(InitializeEcosystemWalletPanel);
-
-            panel.InputFieldSubmitButton.onClick.RemoveAllListeners();
-            panel.InputFieldSubmitButton.onClick.AddListener(() =>
-            {
-                try
-                {
-                    var email = panel.InputField.text;
-                    var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", email: email);
-                    var options = new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                    ConnectWallet(options);
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-        }
-
-        private void InitializeEcosystemWalletPanel_Phone()
-        {
-            var panel = WalletPanels.Find(walletPanel => walletPanel.Identifier == "EcosystemWallet_Phone");
-
-            CloseAllPanels();
-
-            ClearLog(panel.LogText);
-            panel.Panel.SetActive(true);
-
-            panel.BackButton.onClick.RemoveAllListeners();
-            panel.BackButton.onClick.AddListener(InitializeEcosystemWalletPanel);
-
-            panel.InputFieldSubmitButton.onClick.RemoveAllListeners();
-            panel.InputFieldSubmitButton.onClick.AddListener(() =>
-            {
-                try
-                {
-                    var phone = panel.InputField.text;
-                    var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", phoneNumber: phone);
-                    var options = new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                    ConnectWallet(options);
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-        }
-
-        private void InitializeEcosystemWalletPanel_Socials()
-        {
-            var panel = WalletPanels.Find(walletPanel => walletPanel.Identifier == "EcosystemWallet_Socials");
-
-            CloseAllPanels();
-
-            ClearLog(panel.LogText);
-            panel.Panel.SetActive(true);
-
-            panel.BackButton.onClick.RemoveAllListeners();
-            panel.BackButton.onClick.AddListener(InitializeEcosystemWalletPanel);
-
-            // socials action 1 is google, 2 is apple 3 is discord
-
-            panel.Action1Button.onClick.RemoveAllListeners();
-            panel.Action1Button.onClick.AddListener(() =>
-            {
-                try
-                {
-                    Log(panel.LogText, "Authenticating...");
-                    var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", authprovider: AuthProvider.Google);
-                    var options = new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                    ConnectWallet(options);
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-
-            panel.Action2Button.onClick.RemoveAllListeners();
-            panel.Action2Button.onClick.AddListener(() =>
-            {
-                try
-                {
-                    Log(panel.LogText, "Authenticating...");
-                    var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", authprovider: AuthProvider.Apple);
-                    var options = new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                    ConnectWallet(options);
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-
-            panel.Action3Button.onClick.RemoveAllListeners();
-            panel.Action3Button.onClick.AddListener(() =>
-            {
-                try
-                {
-                    Log(panel.LogText, "Authenticating...");
-                    var ecosystemWalletOptions = new EcosystemWalletOptions(ecosystemId: "ecosystem.the-bonfire", authprovider: AuthProvider.Discord);
-                    var options = new WalletOptions(provider: WalletProvider.EcosystemWallet, chainId: ActiveChainId, ecosystemWalletOptions: ecosystemWalletOptions);
-                    ConnectWallet(options);
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-        }
-
-        private void InitializeContractsPanel()
-        {
-            var panel = WalletPanels.Find(walletPanel => walletPanel.Identifier == "Contracts");
-
-            CloseAllPanels();
-
-            ClearLog(panel.LogText);
-            panel.Panel.SetActive(true);
-
-            panel.BackButton.onClick.RemoveAllListeners();
-            panel.BackButton.onClick.AddListener(InitializePanels);
-
-            panel.NextButton.onClick.RemoveAllListeners();
-            panel.NextButton.onClick.AddListener(InitializeAccountAbstractionPanel);
-
-            // Get NFT
-            panel.Action1Button.onClick.RemoveAllListeners();
-            panel.Action1Button.onClick.AddListener(async () =>
-            {
-                try
-                {
-                    LoadingLog(panel.LogText);
-                    var dropErc1155Contract = await ThirdwebManager.Instance.GetContract(address: "0x94894F65d93eb124839C667Fc04F97723e5C4544", chainId: ActiveChainId);
-                    var nft = await dropErc1155Contract.ERC1155_GetNFT(tokenId: 1);
-                    Log(panel.LogText, $"NFT: {JsonConvert.SerializeObject(nft.Metadata)}");
-                    var sprite = await nft.GetNFTSprite(client: ThirdwebManager.Instance.Client);
-                    // spawn image for 3s
-                    var image = new GameObject("NFT Image", typeof(RectTransform), typeof(CanvasRenderer), typeof(Image));
-                    image.transform.SetParent(panel.Panel.transform, false);
-                    image.GetComponent<Image>().sprite = sprite;
-                    Destroy(image, 3f);
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-
-            // Call contract
-            panel.Action2Button.onClick.RemoveAllListeners();
-            panel.Action2Button.onClick.AddListener(async () =>
-            {
-                try
-                {
-                    LoadingLog(panel.LogText);
-                    var contract = await ThirdwebManager.Instance.GetContract(address: "0x6A7a26c9a595E6893C255C9dF0b593e77518e0c3", chainId: ActiveChainId);
-                    var result = await contract.ERC1155_URI(tokenId: 1);
-                    Log(panel.LogText, $"Result (uri): {result}");
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-
-            // Get ERC20 Balance
-            panel.Action3Button.onClick.RemoveAllListeners();
-            panel.Action3Button.onClick.AddListener(async () =>
-            {
-                try
-                {
-                    LoadingLog(panel.LogText);
-                    var dropErc20Contract = await ThirdwebManager.Instance.GetContract(address: "0xEBB8a39D865465F289fa349A67B3391d8f910da9", chainId: ActiveChainId);
-                    var symbol = await dropErc20Contract.ERC20_Symbol();
-                    var balance = await dropErc20Contract.ERC20_BalanceOf(ownerAddress: await ThirdwebManager.Instance.GetActiveWallet().GetAddress());
-                    var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 0, addCommas: false);
-                    Log(panel.LogText, $"Balance: {balanceEth} {symbol}");
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-        }
-
-        private async void InitializeAccountAbstractionPanel()
-        {
-            var currentWallet = ThirdwebManager.Instance.GetActiveWallet();
-            var smartWallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(personalWallet: currentWallet, chainId: ActiveChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
-
-            var panel = WalletPanels.Find(walletPanel => walletPanel.Identifier == "AccountAbstraction");
-
-            CloseAllPanels();
-
-            ClearLog(panel.LogText);
-            panel.Panel.SetActive(true);
-
-            panel.BackButton.onClick.RemoveAllListeners();
-            panel.BackButton.onClick.AddListener(InitializePanels);
-
-            // Personal Sign (1271)
-            panel.Action1Button.onClick.RemoveAllListeners();
-            panel.Action1Button.onClick.AddListener(async () =>
-            {
-                try
-                {
-                    var message = "Hello, World!";
-                    var signature = await smartWallet.PersonalSign(message);
-                    Log(panel.LogText, $"Signature: {signature}");
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-
-            // Create Session Key
-            panel.Action2Button.onClick.RemoveAllListeners();
-            panel.Action2Button.onClick.AddListener(async () =>
-            {
-                try
-                {
-                    Log(panel.LogText, "Granting Session Key...");
-                    var randomWallet = await PrivateKeyWallet.Generate(ThirdwebManager.Instance.Client);
-                    var randomWalletAddress = await randomWallet.GetAddress();
-                    var timeTomorrow = Utils.GetUnixTimeStampNow() + 60 * 60 * 24;
-                    var sessionKey = await smartWallet.CreateSessionKey(
-                        signerAddress: randomWalletAddress,
-                        approvedTargets: new List<string> { Constants.ADDRESS_ZERO },
-                        nativeTokenLimitPerTransactionInWei: "0",
-                        permissionStartTimestamp: "0",
-                        permissionEndTimestamp: timeTomorrow.ToString(),
-                        reqValidityStartTimestamp: "0",
-                        reqValidityEndTimestamp: timeTomorrow.ToString()
-                    );
-                    Log(panel.LogText, $"Session Key Created for {randomWalletAddress}: {sessionKey.TransactionHash}");
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-
-            // Get Active Signers
-            panel.Action3Button.onClick.RemoveAllListeners();
-            panel.Action3Button.onClick.AddListener(async () =>
-            {
-                try
-                {
-                    LoadingLog(panel.LogText);
-                    var activeSigners = await smartWallet.GetAllActiveSigners();
-                    Log(panel.LogText, $"Active Signers: {JsonConvert.SerializeObject(activeSigners)}");
-                }
-                catch (System.Exception e)
-                {
-                    Log(panel.LogText, e.Message);
-                }
-            });
-        }
-
-        private void CloseAllPanels()
-        {
-            ConnectWalletPanel.SetActive(false);
-            foreach (var walletPanel in WalletPanels)
-            {
-                walletPanel.Panel.SetActive(false);
-            }
-        }
-
-        private void ClearLog(TMP_Text logText)
-        {
-            logText.text = string.Empty;
-        }
-
-        private void Log(TMP_Text logText, string message)
-        {
-            logText.text = message;
+            this.LogPanel.GetComponentInChildren<TMP_Text>().text = message;
             ThirdwebDebug.Log(message);
+            this.LogPanel.SetActive(true);
         }
 
-        private void LoadingLog(TMP_Text logText)
+        private bool WalletConnected()
         {
-            logText.text = "Loading...";
+            var isConnected = ThirdwebManager.Instance.ActiveWallet != null;
+            if (!isConnected)
+            {
+                this.LogPlayground("Please authenticate to connect a wallet first.");
+            }
+            return isConnected;
         }
+
+        #endregion
+
+        #region Wallet Connection
+
+        private async void Wallet_Guest()
+        {
+            var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(authprovider: AuthProvider.Guest));
+            var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+
+            var address = await wallet.GetAddress();
+            ThirdwebDebug.Log($"[Guest] Smart wallet admin signer address:\n{address}");
+
+            // --For the guest wallet to showcase ERC4337 we're gonna upgrade it to a smart wallet
+            var smartWallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(
+                ThirdwebManager.Instance.ActiveWallet,
+                chainId: this.ChainId,
+                smartWalletOptions: new SmartWalletOptions(
+                    // sponsor gas for users, improve onboarding
+                    sponsorGas: true,
+                    // optional
+                    factoryAddress: Constants.DEFAULT_FACTORY_ADDRESS_V07,
+                    // optional
+                    entryPoint: Constants.ENTRYPOINT_ADDRESS_V07
+                )
+            );
+
+            var smartWalletAddress = await smartWallet.GetAddress();
+            this.LogPlayground($"[Guest] Connected to wallet (sponsored gas):\n{smartWalletAddress}");
+
+            // // --Smart wallets have special functionality other than just gas sponsorship
+            // var sessionKeyReceipt = await smartWallet.CreateSessionKey(
+            //     signerAddress: await Utils.GetAddressFromENS(ThirdwebManager.Instance.Client, "vitalik.eth"),
+            //     approvedTargets: new List<string> { Constants.ADDRESS_ZERO },
+            //     nativeTokenLimitPerTransactionInWei: "0",
+            //     permissionStartTimestamp: "0",
+            //     permissionEndTimestamp: (Utils.GetUnixTimeStampNow() + (60 * 60)).ToString(), // 1 hour from now
+            //     reqValidityStartTimestamp: "0",
+            //     reqValidityEndTimestamp: (Utils.GetUnixTimeStampNow() + (60 * 60)).ToString() // 1 hour from now
+            // );
+
+            // this.LogPlayground($"Session Key Creation Receipt:\n{sessionKeyReceipt}");
+        }
+
+        private async void Wallet_Social()
+        {
+            var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(authprovider: AuthProvider.Github));
+            var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
+            var address = await wallet.GetAddress();
+            this.LogPlayground($"[Social] Connected to wallet:\n{address}");
+        }
+
+        private async void Wallet_Email()
+        {
+            if (string.IsNullOrEmpty(this.Email))
+            {
+                this.LogPlayground("Please enter a valid email address in the scene's PlaygroundManager.");
+                return;
+            }
+
+            var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(email: this.Email));
+            var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
+            var address = await wallet.GetAddress();
+            this.LogPlayground($"[Email] Connected to wallet:\n{address}");
+        }
+
+        private async void Wallet_Phone()
+        {
+            if (string.IsNullOrEmpty(this.Phone))
+            {
+                this.LogPlayground("Please enter a valid phone number in the scene's PlaygroundManager.");
+                return;
+            }
+
+            var walletOptions = new WalletOptions(provider: WalletProvider.InAppWallet, chainId: this.ChainId, new InAppWalletOptions(phoneNumber: this.Phone));
+            var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
+            var address = await wallet.GetAddress();
+            this.LogPlayground($"[Phone] Connected to wallet:\n{address}");
+        }
+
+        private async void Wallet_External()
+        {
+            var walletOptions = new WalletOptions(
+                provider: WalletProvider.ReownWallet,
+                chainId: this.ChainId,
+                reownOptions: new ReownOptions(projectId: null, name: null, description: null, url: null, iconUrl: null, includedWalletIds: null, excludedWalletIds: null)
+            );
+            var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+            if (this.AlwaysUpgradeToSmartWallet)
+            {
+                wallet = await ThirdwebManager.Instance.UpgradeToSmartWallet(wallet, chainId: this.ChainId, smartWalletOptions: new SmartWalletOptions(sponsorGas: true));
+            }
+            var address = await wallet.GetAddress();
+            this.LogPlayground($"[SIWE] Connected to wallet:\n{address}");
+        }
+
+        #endregion
+
+        #region Wallet Actions
+
+        private async void WalletAction_SignMessage()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            var message = "Hello from thirdweb!";
+            var sig = await ThirdwebManager.Instance.ActiveWallet.PersonalSign(message);
+            this.LogPlayground($"Message:\n{message}\n\nSignature:\n{sig}");
+        }
+
+        private async void WalletAction_SIWE()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            var payload = Utils.GenerateSIWE(
+                new LoginPayloadData()
+                {
+                    Domain = "thirdweb.com",
+                    Address = await ThirdwebManager.Instance.ActiveWallet.GetAddress(),
+                    Statement = "Sign in with thirdweb to the Unity SDK playground.",
+                    Version = "1",
+                    ChainId = this.ChainId.ToString(),
+                    Nonce = System.Guid.NewGuid().ToString(),
+                    IssuedAt = System.DateTime.UtcNow.ToString("o"),
+                }
+            );
+            var sig = await ThirdwebManager.Instance.ActiveWallet.PersonalSign(payload);
+            this.LogPlayground($"SIWE Payload:\n{payload}\n\nSignature:\n{sig}");
+        }
+
+        private async void WalletAction_SignTypedData()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            var json =
+                "{\"types\":{\"EIP712Domain\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"version\",\"type\":\"string\"},{\"name\":\"chainId\",\"type\":\"uint256\"},{\"name\":\"verifyingContract\",\"type\":\"address\"}],\"Person\":[{\"name\":\"name\",\"type\":\"string\"},{\"name\":\"wallet\",\"type\":\"address\"}],\"Mail\":[{\"name\":\"from\",\"type\":\"Person\"},{\"name\":\"to\",\"type\":\"Person\"},{\"name\":\"contents\",\"type\":\"string\"}]},\"primaryType\":\"Mail\",\"domain\":{\"name\":\"Ether Mail\",\"version\":\"1\",\"chainId\":1,\"verifyingContract\":\"0xCcCCccccCCCCcCCCCCCcCcCccCcCCCcCcccccccC\"},\"message\":{\"from\":{\"name\":\"Cow\",\"wallet\":\"0xCD2a3d9F938E13CD947Ec05AbC7FE734Df8DD826\"},\"to\":{\"name\":\"Bob\",\"wallet\":\"0xbBbBBBBbbBBBbbbBbbBbbBBbBbbBbBbBbBbbBBbB\"},\"contents\":\"Hello, Bob!\"}}";
+            var sig = await ThirdwebManager.Instance.ActiveWallet.SignTypedDataV4(json);
+            this.LogPlayground($"Typed Data:\n{json}\n\nSignature:\n{sig}");
+        }
+
+        private async void WalletAction_GetBalance()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            var balance = await ThirdwebManager.Instance.ActiveWallet.GetBalance(this.ChainId);
+            var chainMeta = await Utils.GetChainMetadata(ThirdwebManager.Instance.Client, this.ChainId);
+            this.LogPlayground($"Wallet Balance:\n{Utils.ToEth(balance.ToString(), 6, true)} {chainMeta.NativeCurrency.Symbol}");
+        }
+
+        private async void WalletAction_Transfer()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            // ---Transfer native tokens
+            var receipt = await ThirdwebManager.Instance.ActiveWallet.Transfer(chainId: this.ChainId, toAddress: await ThirdwebManager.Instance.ActiveWallet.GetAddress(), weiAmount: 0);
+
+            // ---Transfer ERC20 tokens
+            // var receipt = await ThirdwebManager.Instance.ActiveWallet.Transfer(chainId: this.ChainId, toAddress: await ThirdwebManager.Instance.ActiveWallet.GetAddress(), weiAmount: 0, tokenAddress: "0xERC20Addy");
+
+            this.LogPlayground($"Transfer Receipt:\n{receipt}");
+        }
+
+        #endregion
+
+        #region Contract Interaction
+
+        private async void Contract_Read()
+        {
+            var usdcContractAddressArbitrum = "0xaf88d065e77c8cc2239327c5edb3a432268e5831";
+            var contract = await ThirdwebManager.Instance.GetContract(address: usdcContractAddressArbitrum, chainId: 42161);
+            var result = await contract.ERC20_BalanceOf(ownerAddress: await Utils.GetAddressFromENS(ThirdwebManager.Instance.Client, "vitalik.eth"));
+            var tokenSymbol = await contract.ERC20_Symbol();
+            var resultFormatted = Utils.ToEth(result.ToString(), 6, true) + " " + tokenSymbol;
+            this.LogPlayground($"ThirdwebContract.ERC20_BalanceOf Result:\n{resultFormatted}");
+        }
+
+        private async void Contract_Write()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            var contract = await ThirdwebManager.Instance.GetContract(address: "0x3EE304A2cBf24F73510C6C590cFcd10bEd0E6F70", chainId: this.ChainId);
+            var transactionReceipt = await contract.ERC20_Approve(
+                wallet: ThirdwebManager.Instance.ActiveWallet,
+                spenderAddress: await Utils.GetAddressFromENS(ThirdwebManager.Instance.Client, "vitalik.eth"),
+                amount: 0
+            );
+            this.LogPlayground($"ThirdwebContract.ERC20_Approve Receipt:\n{transactionReceipt}");
+        }
+
+        private async void Contract_ReadCustom()
+        {
+            var contract = await ThirdwebManager.Instance.GetContract(address: "0xBD0334AC7FADA28CcD27Fa09838e9EA4c39117Db", chainId: this.ChainId);
+            var method = "function getDeposit() view returns (uint256)";
+            var result = await contract.Read<BigInteger>(method);
+            this.LogPlayground($"ThirdwebContract.Read<T>\n({method}\nResult:\n{result}");
+        }
+
+        private async void Contract_WriteCustom()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            var contract = await ThirdwebManager.Instance.GetContract(address: "0xBD0334AC7FADA28CcD27Fa09838e9EA4c39117Db", chainId: this.ChainId);
+            var method = "function transferOwnership(address newOwner) payable";
+            // just in case someday this actually goes through for some unknown reason, we can count on vitalik
+            var newOwner = await Utils.GetAddressFromENS(ThirdwebManager.Instance.Client, "vitalik.eth");
+            var transactionReceipt = await contract.Write(wallet: ThirdwebManager.Instance.ActiveWallet, method: method, weiValue: 0, parameters: new object[] { newOwner });
+            this.LogPlayground($"ThirdwebContract.Write\n({method}\nReceipt:\n{transactionReceipt}");
+        }
+
+        private async void Contract_PrepareTransaction()
+        {
+            if (!this.WalletConnected())
+            {
+                return;
+            }
+
+            // ---You can prepare a transaction instead of directly calling Thirdweb.Contract.Write
+            // var contract = await ThirdwebManager.Instance.GetContract(address: "0xBD0334AC7FADA28CcD27Fa09838e9EA4c39117Db", chainId: this.ChainId);
+            // var method = "function transferOwnership(address newOwner) payable";
+            // var newOwner = await Utils.GetAddressFromENS(ThirdwebManager.Instance.Client, "vitalik.eth");
+            // var transaction = await contract.Prepare(wallet: ThirdwebManager.Instance.ActiveWallet, method: method, weiValue: 0, parameters: new object[] { newOwner });
+
+            // ---Or you can create a transaction from scratch
+            var transaction = await ThirdwebTransaction.Create(
+                ThirdwebManager.Instance.ActiveWallet,
+                new ThirdwebTransactionInput(this.ChainId, to: await ThirdwebManager.Instance.ActiveWallet.GetAddress(), value: 0, data: "0x")
+            );
+            var costEstimates = await ThirdwebTransaction.EstimateTotalCosts(transaction);
+
+            // ---If you wanted to send it
+            // `var hash = transaction.Send();` or `var receipt = await transaction.SendAndWaitForTransactionReceipt();`
+
+            // ---We're just gonna log it here
+            this.LogPlayground($"ThirdwebContract.Prepare\nEstimated Cost:\n{costEstimates.Ether}\n\nTransaction:\n{JsonConvert.SerializeObject(transaction, Formatting.Indented)}");
+        }
+
+        #endregion
     }
 }

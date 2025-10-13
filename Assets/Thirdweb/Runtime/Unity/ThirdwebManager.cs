@@ -1,6 +1,6 @@
-using UnityEngine;
 using System.Linq;
 using System.Numerics;
+using UnityEngine;
 
 namespace Thirdweb.Unity
 {
@@ -12,7 +12,7 @@ namespace Thirdweb.Unity
         [field: SerializeField]
         private string BundleId { get; set; }
 
-        public new static ThirdwebManager Instance
+        public static new ThirdwebManager Instance
         {
             get => ThirdwebManagerBase.Instance as ThirdwebManager;
         }
@@ -46,6 +46,6 @@ namespace Thirdweb.Unity
             );
         }
 
-        protected override string MobileRedirectScheme => BundleId + "://";
+        public override string MobileRedirectScheme => BundleId + "://";
     }
 }

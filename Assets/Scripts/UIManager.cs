@@ -67,6 +67,16 @@ public class GameManager : MonoBehaviour
     private int currentInstructionIndex = 0; // Track current instruction sprite
     private bool showingInstructions = false; // Track if instructions are being shown
 
+    [SerializeField] private Canvas characterSelectCanvas;  // New: character select screen
+    [SerializeField] private Button character1Button;       // Assign in Inspector
+    [SerializeField] private Button character2Button;       // Assign in Inspector
+    [SerializeField] private GameObject character1;         // Reference to Player 1 prefab
+    [SerializeField] private GameObject character2;         // Reference to Player 2 prefab
+
+    private bool hasSelectedCharacter = false;              // Ensures only first-time character selection
+    private bool hasSeenInstructions = false;               // Ensures instructions shown only once
+
+
     // Camera follow settings
     public float smoothSpeed = 0.125f; // How smooth the camera follows (lower = smoother but slower)
     public Vector3 cameraOffset = new Vector3(0f, 0f, -10f); // Offset from player (Z=-10 for 2D)
@@ -86,18 +96,8 @@ public class GameManager : MonoBehaviour
     //public LoadingDots loadingDots;
     private Stack<GameObject> canvasStack = new Stack<GameObject>();
 
-    //void Awake()
-    //{
-    //    if (Instance == null)
-    //    {
-    //        Instance = this;
-    //    }
-    //    else
-    //    {
-    //        Destroy(gameObject);
-    //        return;
-    //    }
-    //}
+    private int selectedCharacterIndex = 0;
+
 
     private void Awake()
     {
@@ -105,6 +105,8 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject); // Keep GameManager
+            //if (character1 != null) DontDestroyOnLoad(character1);
+            //if (character2 != null) DontDestroyOnLoad(character2);
             if (transitionCanvasGroup != null)
                 DontDestroyOnLoad(transitionCanvasGroup.gameObject); // Keep canvas group alive
             SceneManager.sceneLoaded += OnSceneLoaded;
@@ -114,36 +116,6 @@ public class GameManager : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-
-    //void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    //{
-    //    if (isGameLoggedIn)
-    //    {
-    //        ResetGameState();
-    //        if (loginCanvas != null)
-    //        {
-    //            loginCanvas.gameObject.SetActive(false);
-    //        }
-
-    //        mainMenuCanvas.gameObject.SetActive(true);
-    //        pauseMenu.gameObject.SetActive(false);
-    //        resumeMenu.gameObject.SetActive(false);
-    //        gameOverMenu.gameObject.SetActive(false);
-    //        HTPCanvas.gameObject.SetActive(false);
-    //        LoadingCanvas.gameObject.SetActive(false);
-    //    }
-    //    else
-    //    {
-    //        loginCanvas.gameObject.SetActive(true);
-    //        mainMenuCanvas.gameObject.SetActive(false);
-    //        pauseMenu.gameObject.SetActive(false);
-    //        resumeMenu.gameObject.SetActive(false);
-    //        gameOverMenu.gameObject.SetActive(false);
-    //        HTPCanvas.gameObject.SetActive(false);
-    //        LoadingCanvas.gameObject.SetActive(false);
-    //    }
-    //}
 
     void OnSceneLoaded(Scene scene, LoadSceneMode mode)
     {
@@ -166,8 +138,8 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("⚠️ PaintManager not found after scene load!");
         }
 
-        // Also reassign player, main camera, and canvases
-        player = GameObject.FindWithTag("Player");
+        //// Also reassign player, main camera, and canvases
+        //player = GameObject.FindWithTag("Player");
         main = Camera.main;
     }
 
@@ -233,6 +205,12 @@ public class GameManager : MonoBehaviour
             {
                 instructionCanvas.gameObject.SetActive(false);
             }
+
+            
+
+            if (characterSelectCanvas != null)
+                characterSelectCanvas.gameObject.SetActive(false);
+
             Time.timeScale = 0f;
             hasDied = false;
 
@@ -257,6 +235,13 @@ public class GameManager : MonoBehaviour
         {
             startButton.onClick.AddListener(OnStartButtonClicked);
         }
+
+        if (character1Button != null)
+            character1Button.onClick.AddListener(() => OnCharacterSelected(character1));
+
+        if (character2Button != null)
+            character2Button.onClick.AddListener(() => OnCharacterSelected(character2));
+
         if (pauseButton != null)
         {
             pauseButton.onClick.AddListener(OnPauseButtonClicked);
@@ -271,7 +256,7 @@ public class GameManager : MonoBehaviour
         }
         if (BMMutton != null)
         {
-            BMMutton.onClick.AddListener(OnBackToMainMenuButtonClicked);
+            BMMutton.onClick.AddListener(ReturnToMainMenu);
         }
         if (RBMMutton != null)
         {
@@ -319,11 +304,7 @@ public class GameManager : MonoBehaviour
             inputField.onEndEdit.AddListener(OnTextEntered);
         }
 
-        // Subscribe to WalletConnectManager's OnLoggedIn event
-        //if (walletConnectManager != null)
-        //{
-        //    walletConnectManager.OnLoggedIn.AddListener(OnWalletLoggedIn);
-        //}
+        
     }
 
     private void OnDestroy()
@@ -344,6 +325,7 @@ public class GameManager : MonoBehaviour
     void FollowPlayer()
     {
         // Target position: follow player X, keep camera Y fixed, maintain Z offset
+
         Vector3 desiredPosition = new Vector3(
             player.transform.position.x + cameraOffset.x,
             main.transform.position.y, // Keep Y fixed
@@ -358,19 +340,6 @@ public class GameManager : MonoBehaviour
         );
 
         main.transform.position = smoothedPosition;
-    }
-
-    void OnLoginButtonClicked(string authProvider)
-    {
-        AudioManager.Instance.PlayClickSound();
-        if (walletConnectManager != null)
-        {
-            walletConnectManager.Login(authProvider);
-        }
-        else
-        {
-            Debug.LogError("WalletConnectManager is not set, cannot perform login!");
-        }
     }
 
     public void OnWalletLoggedIn()
@@ -388,32 +357,82 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    
+
     void OnStartButtonClicked()
     {
         AudioManager.Instance.PlayClickSound();
-        // Show instructions instead of starting game directly
-        StartInstructions();
-    }
 
-    void StartInstructions()
-    {
-        if (mainMenuCanvas != null)
+        if (!hasSelectedCharacter)
         {
-            mainMenuCanvas.gameObject.SetActive(false);
+            // Show character select the first time only
+            ShowCharacterSelect();
         }
-        if (instructionCanvas != null)
+        else if (!hasSeenInstructions)
         {
-            showingInstructions = true;
-            instructionCanvas.gameObject.SetActive(true);
-            currentInstructionIndex = 0;
-            ShowInstruction();
+            // Skip directly to instructions after character already chosen
+            StartInstructions();
         }
         else
         {
-            Debug.LogWarning("InstructionCanvas reference not set in GameManager! Starting game directly.");
+            // If both character and instructions were already seen, just start game directly
             StartGame();
         }
     }
+    void ShowCharacterSelect()
+    {
+        if (mainMenuCanvas != null)
+            mainMenuCanvas.gameObject.SetActive(false);
+
+        if (characterSelectCanvas != null)
+            characterSelectCanvas.gameObject.SetActive(true);
+    }
+
+
+
+
+    void OnCharacterSelected(GameObject selectedPrefab)
+    {
+        AudioManager.Instance.PlayClickSound();
+
+        if (selectedPrefab == null)
+        {
+            Debug.LogError("Selected character prefab is null!");
+            return;
+        }
+
+        selectedCharacterIndex = selectedPrefab == character2 ? 2 : 1;
+        PlayerPrefs.SetInt("SelectedCharacterIndex", selectedCharacterIndex);
+        PlayerPrefs.Save();
+        // Instantiate the selected character prefab at initial position
+        player = Instantiate(selectedPrefab, initialPlayerPosition, Quaternion.identity);
+
+        // Assign player to other scripts
+        RewardSpawner spawner = FindObjectOfType<RewardSpawner>();
+        if (spawner != null) spawner.SetPlayer(player);
+
+        ObstacleSpawner obstacleSpawner = FindObjectOfType<ObstacleSpawner>();
+        if (obstacleSpawner != null) obstacleSpawner.SetPlayer(player);
+
+        FixedXObstacleSpawner2D fixedSpawner = FindObjectOfType<FixedXObstacleSpawner2D>();
+        if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+        PaintManager PM = FindObjectOfType<PaintManager>();
+        if (PM != null) PM.SetPlayer(player);
+
+        hasSelectedCharacter = true;
+
+        // Hide character select canvas
+        if (characterSelectCanvas != null)
+            characterSelectCanvas.gameObject.SetActive(false);
+
+        // Continue to instructions
+        StartInstructions();
+    }
+
+
+
+    
 
     void StartGame()
     {
@@ -446,61 +465,6 @@ public class GameManager : MonoBehaviour
         isGameStarted = true;
         //shouldStartImmediately = false; // Reset the flag
     }
-
-
-    public void OnBackButtonClickedHTP()
-    { 
-        
-         HTPCanvas.gameObject.SetActive(false);
-         mainMenuCanvas.gameObject.SetActive(true);      
-    }
-    
-    public void OnBackButtonClickedLB()
-    {
-        if (hasDied)
-        {
-            leaderboardCanvas.gameObject.SetActive(false);
-            gameOverMenu.gameObject.SetActive(true);
-        }
-        else
-        {
-            leaderboardCanvas.gameObject.SetActive(false);
-            mainMenuCanvas.gameObject.SetActive(true);
-        }               
-    }
-    
-    void OnPauseButtonClicked()
-    {
-        AudioManager.Instance.PlayClickSound();
-        PauseGame();
-    }
-
-    void PauseGame()
-    {
-        AudioManager.Instance.PlayPauseMusic();
-        Time.timeScale = 0f;
-        pauseMenu.gameObject.SetActive(false);
-        resumeMenu.gameObject.SetActive(true);
-        UpdateXPText(); // Update XP display when pausing
-        //UpdatePauseMenuWalletInfo(); // Update wallet and token info in pause menu
-    }
-
-    void OnResumeButtonClicked()
-    {
-        AudioManager.Instance.PlayClickSound();
-        ResumeGame();
-    }
-
-    void ResumeGame()
-    {
-        AudioManager.Instance.PlayGameplayMusic();
-        Time.timeScale = 1f;
-        resumeMenu.gameObject.SetActive(false);
-        pauseMenu.gameObject.SetActive(true);
-    }
-
-   
-
     public async Task GameOver()
     {
         
@@ -522,18 +486,6 @@ public class GameManager : MonoBehaviour
         
     }
 
-    public async void SetScore()
-    {
-        var client = new HttpClient();
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://api.basement.fun/launcher/");
-        request.Headers.Add("X-Service-Method", "setUserScore");
-        var content = new StringContent("{\r\n    \"launcherJwt\": {{JWT}},\r\n    \"nonce\": \"nonce=50zpzg\",\r\n    \"score\": 155\r\n}", null, "text/plain");
-        request.Content = content;
-        var response = await client.SendAsync(request);
-        response.EnsureSuccessStatusCode();
-        Console.WriteLine(await response.Content.ReadAsStringAsync());
-    }
-
     void OnRestartButtonClicked()
     {
         AudioManager.Instance.PlayClickSound();
@@ -546,20 +498,63 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ReturnToMainMenuWithTransition(SceneManager.GetActiveScene().name));
     }
 
-    private void ResetGameState()
-    {
-        AudioManager.Instance.StopAllMusic(); 
-        ResetPlayerHealth();
-        totalXP = 0;
-        isGameStarted = false;
-        hasDied = false;
-        isGameLoggedIn  = true; // Keep logged in when returning to main menu
-    }
+    //private IEnumerator ReturnToMainMenuWithTransition(string sceneName)
+    //{
+    //    // fade in transition
+    //    AudioManager.Instance.PlayMenuMusic();
+    //    transitionCanvasGroup.gameObject.SetActive(true);
+    //    float elapsedTime = 0f;
+    //    while (elapsedTime < transitionDuration)
+    //    {
+    //        elapsedTime += Time.unscaledDeltaTime;
+    //        transitionCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / transitionDuration);
+    //        yield return null;
+    //    }
+    //    transitionCanvasGroup.alpha = 1f;
+
+    //    // load the scene
+    //    AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+    //    asyncLoad.allowSceneActivation = false;
+
+    //    while (asyncLoad.progress < 0.9f)
+    //    {
+    //        yield return null;
+    //    }
+    //    asyncLoad.allowSceneActivation = true;
+    //    while (!asyncLoad.isDone)
+    //    {
+    //        yield return null;
+    //    }
+
+    //    // fade out transition
+    //    elapsedTime = 0f;
+    //    while (elapsedTime < transitionDuration)
+    //    {
+    //        elapsedTime += Time.unscaledDeltaTime;
+    //        transitionCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / transitionDuration);
+    //        yield return null;
+    //    }
+    //    transitionCanvasGroup.alpha = 0f;
+    //    transitionCanvasGroup.gameObject.SetActive(false);
+
+    //    // show the main menu instead of gameplay
+    //    loginCanvas.gameObject.SetActive(false);            // show login first (so user can log in again if needed)
+    //    mainMenuCanvas.gameObject.SetActive(true);         // show main menu
+    //    //gameModeMenuCanvas.SetActive(false);
+    //    leaderboardCanvas.gameObject.gameObject.SetActive(false);
+    //    resumeMenu.gameObject.SetActive(false);
+    //    pauseMenu.gameObject.SetActive(false);
+    //    gameOverMenu.gameObject.SetActive(false);
+    //    //gameWinCanvas.SetActive(false);
+    //    Time.timeScale = 0f;                    // keep the game paused until user starts
+    //    UpdateXPText();
+    //}
 
     private IEnumerator ReturnToMainMenuWithTransition(string sceneName)
     {
         // fade in transition
         AudioManager.Instance.PlayMenuMusic();
+        gameOverMenu.gameObject.SetActive(false);
         transitionCanvasGroup.gameObject.SetActive(true);
         float elapsedTime = 0f;
         while (elapsedTime < transitionDuration)
@@ -596,19 +591,52 @@ public class GameManager : MonoBehaviour
         transitionCanvasGroup.gameObject.SetActive(false);
 
         // show the main menu instead of gameplay
-        loginCanvas.gameObject.SetActive(false);            // show login first (so user can log in again if needed)
-        mainMenuCanvas.gameObject.SetActive(true);         // show main menu
-        //gameModeMenuCanvas.SetActive(false);
-        leaderboardCanvas.gameObject.gameObject.SetActive(false);
+        loginCanvas.gameObject.SetActive(false);
+        mainMenuCanvas.gameObject.SetActive(true);
+        leaderboardCanvas.gameObject.SetActive(false);
         resumeMenu.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(false);
         gameOverMenu.gameObject.SetActive(false);
-        //gameWinCanvas.SetActive(false);
-        Time.timeScale = 0f;                    // keep the game paused until user starts
-        UpdateXPText(); 
+        Time.timeScale = 0f;
+        UpdateXPText();
+
+        // ✅ Recreate player (so it exists again after RMM)
+        int selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacterIndex", 1);
+        GameObject selectedPrefab = selectedCharacterIndex == 2 ? character2 : character1;
+
+        if (selectedPrefab != null)
+        {
+            player = Instantiate(selectedPrefab, initialPlayerPosition, Quaternion.identity);
+
+            // reconnect all systems
+            var spawner = FindObjectOfType<RewardSpawner>();
+            if (spawner != null) spawner.SetPlayer(player);
+
+            var obstacleSpawner = FindObjectOfType<ObstacleSpawner>();
+            if (obstacleSpawner != null) obstacleSpawner.SetPlayer(player);
+
+            var fixedSpawner = FindObjectOfType<FixedXObstacleSpawner2D>();
+            if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+            var pm = FindObjectOfType<PaintManager>();
+            if (pm != null) pm.SetPlayer(player);
+        }
+        else
+        {
+            Debug.LogError("❌ No player prefab found for ReturnToMainMenu.");
+        }
     }
 
 
+    private void ResetGameState()
+    {
+        AudioManager.Instance.StopAllMusic(); 
+        ResetPlayerHealth();
+        totalXP = 0;
+        isGameStarted = false;
+        hasDied = false;
+        isGameLoggedIn  = true; // Keep logged in when returning to main menu
+    }
 
     public void RestartGame()
     {
@@ -620,6 +648,7 @@ public class GameManager : MonoBehaviour
     {
         // show loading/transition effect if you like
         AudioManager.Instance.PlayGameplayMusic();
+        gameOverMenu.gameObject.SetActive(false);
         transitionCanvasGroup.gameObject.SetActive(true);
         float elapsedTime = 0f;
         while (elapsedTime < transitionDuration)
@@ -662,18 +691,105 @@ public class GameManager : MonoBehaviour
         leaderboardCanvas.gameObject.SetActive(false);
         gameOverMenu.gameObject.SetActive(false);
         HTPCanvas.gameObject.SetActive(false);
-       
+        // Recreate the selected player prefab after scene reload
+        if (player == null)
+        {
+            selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacterIndex", 1);
+            GameObject selectedPrefab = selectedCharacterIndex == 2 ? character2 : character1;
+            player = Instantiate(selectedPrefab, initialPlayerPosition, Quaternion.identity);
+
+
+            // Reconnect player references in other scripts
+            var spawner = FindObjectOfType<RewardSpawner>();
+            if (spawner != null) spawner.SetPlayer(player);
+
+            var obstacleSpawner = FindObjectOfType<ObstacleSpawner>();
+            if (obstacleSpawner != null) obstacleSpawner.SetPlayer(player);
+
+            var fixedSpawner = FindObjectOfType<FixedXObstacleSpawner2D>();
+            if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+            var pm = FindObjectOfType<PaintManager>();
+            if (pm != null) pm.SetPlayer(player);
+
+            Debug.Log("✅ Player re-instantiated after restart.");
+        }
+
         Time.timeScale = 1f;
         isGameStarted = true;
-        UpdateXPText(); 
+        UpdateXPText();
     }
 
+    void StartInstructions()
+    {
+        if (mainMenuCanvas != null)
+        {
+            mainMenuCanvas.gameObject.SetActive(false);
+        }
+        if (instructionCanvas != null)
+        {
+            showingInstructions = true;
+            instructionCanvas.gameObject.SetActive(true);
+            currentInstructionIndex = 0;
+            ShowInstruction();
+        }
+        else
+        {
+            Debug.LogWarning("InstructionCanvas reference not set in GameManager! Starting game directly.");
+            StartGame();
+        }
+    }
+    public void OnBackButtonClickedHTP()
+    {
 
+        HTPCanvas.gameObject.SetActive(false);
+        mainMenuCanvas.gameObject.SetActive(true);
+    }
 
+    public void OnBackButtonClickedLB()
+    {
+        if (hasDied)
+        {
+            leaderboardCanvas.gameObject.SetActive(false);
+            gameOverMenu.gameObject.SetActive(true);
+        }
+        else
+        {
+            leaderboardCanvas.gameObject.SetActive(false);
+            mainMenuCanvas.gameObject.SetActive(true);
+        }
+    }
 
+    void OnPauseButtonClicked()
+    {
+        AudioManager.Instance.PlayClickSound();
+        PauseGame();
+    }
 
+    void PauseGame()
+    {
+        AudioManager.Instance.PlayPauseMusic();
+        Time.timeScale = 0f;
+        pauseMenu.gameObject.SetActive(false);
+        resumeMenu.gameObject.SetActive(true);
+        UpdateXPText(); // Update XP display when pausing
+        //UpdatePauseMenuWalletInfo(); // Update wallet and token info in pause menu
+    }
 
+    void OnResumeButtonClicked()
+    {
+        AudioManager.Instance.PlayClickSound();
+        ResumeGame();
+    }
 
+    void ResumeGame()
+    {
+        AudioManager.Instance.PlayGameplayMusic();
+        Time.timeScale = 1f;
+        resumeMenu.gameObject.SetActive(false);
+        pauseMenu.gameObject.SetActive(true);
+    }
+   
 
     public void OnBackToMainMenuButtonClicked()
     {
@@ -921,15 +1037,27 @@ public class GameManager : MonoBehaviour
         EndInstructions();
     }
 
+    //void EndInstructions()
+    //{
+    //    showingInstructions = false;
+    //    if (instructionCanvas != null)
+    //    {
+    //        instructionCanvas.gameObject.SetActive(false);
+    //    }
+    //    StartGame(); // Proceed to start the game
+    //}
+
     void EndInstructions()
     {
         showingInstructions = false;
+        hasSeenInstructions = true; // mark instructions as seen
         if (instructionCanvas != null)
         {
             instructionCanvas.gameObject.SetActive(false);
         }
         StartGame(); // Proceed to start the game
     }
+
 
     // Optional: Auto-advance coroutine
     IEnumerator AutoAdvanceInstruction(float delay)
