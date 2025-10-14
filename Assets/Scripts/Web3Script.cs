@@ -557,60 +557,63 @@ public class WalletConnectManager : MonoBehaviour
     //    }
     //}
     [Obsolete]
-    //public async void ClaimToken()
-    //{
-        
-    //    try
-    //    {
-    //        if (ClaimButton != null) ClaimButton.interactable = false;
-    //        if (ClaimedTokenBalanceText != null)
-    //        {
-    //            ClaimedTokenBalanceText.gameObject.SetActive(true);
-    //            ClaimedTokenBalanceText.text = "Claiming...";
-    //        }
+    public async void ClaimToken()
+    {
 
-    //        float totalXP = GameManager.GetTotalXP();
-    //        decimal tokenAmount = (decimal)totalXP;
-    //        ClaimTokenAmount = tokenAmount.ToString();
-    //        var contract = await ThirdwebManager.Instance.GetContract(ClaimTokenContractAddress, ActiveChainId);
-    //        var decimals = 2;
-    //        string claimAmountInWei = Utils.ToWei(tokenAmount.ToString());
-    //        Debug.Log($"Claiming {tokenAmount} tokens ({claimAmountInWei} wei) based on {totalXP} XP");
+        try
+        {
+            if (ClaimButton != null) ClaimButton.interactable = false;
+            Debug.Log(wallet);
+            Debug.Log(walletAddress);
 
-    //        if (wallet is WalletConnectWallet walletConnect)
-    //        {
-    //            await walletConnect.EnsureCorrectNetwork(ActiveChainId);
-    //        }
-    //        //await Task.Delay(5000);
+            if (ClaimedTokenBalanceText != null)
+            {
+                ClaimedTokenBalanceText.gameObject.SetActive(true);
+                ClaimedTokenBalanceText.text = "Claiming...";
+            }
 
-    //        var transactionResult = await contract.DropERC20_Claim(wallet, walletAddress, ClaimTokenAmount);
-    //        //var transactionResult = await contract.TokenERC20_MintTo(wallet, walletAddress, ClaimTokenAmount);
-           
-    //        //var transactionResult = await contract.Write(wallet, "claim", 0, ClaimTokenAmount);
+            float totalXP = GameManager.GetTotalXP();
+            decimal tokenAmount = (decimal)totalXP;
+            ClaimTokenAmount = tokenAmount.ToString();
+            var contract = await ThirdwebManager.Instance.GetContract(ClaimTokenContractAddress, ActiveChainId);
+            var decimals = 2;
+            string claimAmountInWei = Utils.ToWei(tokenAmount.ToString());
+            Debug.Log($"Claiming {tokenAmount} tokens ({claimAmountInWei} wei) based on {totalXP} XP");
 
-    //        Debug.Log($"Tokens claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
-    //        //await Task.Delay(5000);
+            //if (wallet is WalletConnectWallet walletConnect)
+            //{
+            //    await walletConnect.EnsureCorrectNetwork(ActiveChainId);
+            //}
+            //await Task.Delay(5000);
 
-    //        var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
-    //        var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-    //        Debug.Log($"Updated token balance for {walletAddress}: {tokenBalanceFormatted}");
-    //        if (ClaimedTokenBalanceText != null)
-    //        {
-    //            ClaimedTokenBalanceText.text = $"Claimed: {totalXP} Color";
-    //            ClaimedTokenBalanceText.text = $"Color: {tokenBalanceFormatted}";
-    //        }
-    //        if (ClaimButton != null) ClaimButton.interactable = false;
-    //    }
-    //    catch (System.Exception ex)
-    //    {
-    //        Debug.LogError($"Failed to claim tokens: {ex.Message}");
-    //        if (ClaimedTokenBalanceText != null)
-    //        {
-    //            ClaimedTokenBalanceText.text = $"Claim Failed: {ex.Message}";
-    //        }
-    //        if (ClaimButton != null) ClaimButton.interactable = true;
-    //    }
-    //}
+            var transactionResult = await contract.DropERC20_Claim(wallet, walletAddress, ClaimTokenAmount);
+            //var transactionResult = await contract.TokenERC20_MintTo(wallet, walletAddress, ClaimTokenAmount);
+
+            //var transactionResult = await contract.Write(wallet, "claim", 0, ClaimTokenAmount);
+
+            Debug.Log($"Tokens claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
+            //await Task.Delay(5000);
+
+            var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
+            var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+            Debug.Log($"Updated token balance for {walletAddress}: {tokenBalanceFormatted}");
+            if (ClaimedTokenBalanceText != null)
+            {
+                ClaimedTokenBalanceText.text = $"Claimed: {totalXP} Color";
+                ClaimedTokenBalanceText.text = $"Color: {tokenBalanceFormatted}";
+            }
+            if (ClaimButton != null) ClaimButton.interactable = false;
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Failed to claim tokens: {ex.Message}");
+            if (ClaimedTokenBalanceText != null)
+            {
+                ClaimedTokenBalanceText.text = $"Claim Failed: {ex.Message}";
+            }
+            if (ClaimButton != null) ClaimButton.interactable = true;
+        }
+    }
 
     public async void ConnectWithEcosystem()
     {
@@ -789,7 +792,8 @@ public class WalletConnectManager : MonoBehaviour
         Debug.Log($"Wallet chainid: {ActiveChainId}");
         wallet = await ThirdwebManager.Instance.ConnectWallet(connection);
         walletAddress = await wallet.GetAddress();
-
+        Debug.Log($"Wallet: {wallet}");
+        Debug.Log($"Wallet add: {walletAddress}");
         OnLoggedIn?.Invoke(walletAddress);
 
         var balance = await wallet.GetBalance(chainId: ActiveChainId);
@@ -854,9 +858,9 @@ public class WalletConnectManager : MonoBehaviour
             reownOptions: reownOptions
         );
 
-        var wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
+        wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
         walletAddress = await wallet.GetAddress();
-
+        Debug.Log($"Wallet: {wallet}");
         OnLoggedIn?.Invoke(walletAddress);
 
         var balance = await wallet.GetBalance(chainId: ActiveChainId);
