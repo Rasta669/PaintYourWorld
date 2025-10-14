@@ -49,9 +49,7 @@ MonoBehaviour:
   <ShowDebugLogs>k__BackingField: 1
   <AutoConnectLastWallet>k__BackingField: 0
   <RedirectPageHtmlOverride>k__BackingField: 
-  <RpcOverrides>k__BackingField:
-  - ChainId: 84532
-    RpcUrl: https://base-sepolia.drpc.org
+  <RpcOverrides>k__BackingField: []
   <ClientId>k__BackingField: c9bcd141a1de755aa33c7c9e3516a6e6
   <BundleId>k__BackingField: prj_cm8iw0acq03z3mage1ctwrwx1
 --- !u!1001 &5352000285921552497

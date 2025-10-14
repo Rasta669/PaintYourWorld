@@ -842,7 +842,7 @@ public class WalletConnectManager : MonoBehaviour
             projectId: "1c367b6687847515ab0a7b9b2f32cb59",
             name: "Paint Your World",
             description: "thirdweb powered experience",
-            url: "https://pyw-host.vercel.app/",
+            url: "https://rasta669.github.io/PaintYourWorld/",
             iconUrl: "https://mygame.example/icon.png",
             includedWalletIds: new[] { "eip155:1:metamask" },
             excludedWalletIds: null
