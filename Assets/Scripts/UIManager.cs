@@ -21,12 +21,23 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas HTPCanvas;
     [SerializeField] private Canvas leaderboardCanvas;
     [SerializeField] private Canvas LoadingCanvas;
+    [SerializeField] private Canvas OptionCanvas;
+    [SerializeField] private Canvas videoCanvas;
+    [SerializeField] private Canvas audioCanvas;
     [SerializeField] private Button startButton;         // Reference to your start button
     [SerializeField] private Button pauseButton;         // Reference to your pause button
     [SerializeField] private Button resumeButton;        // Reference to your resume button
     [SerializeField] private Button restartButton;       // Reference to your restart button
     [SerializeField] private Button BMMutton;            // Reference to your back to main menu button
     [SerializeField] private Button RBMMutton;           // Reference to your back to main menu button
+    [SerializeField] private Button OptionsButton;           // Reference to your back to main menu button
+    [SerializeField] private Button OptionsBackButton;           // Reference to your back to main menu button
+    [SerializeField] private Button audioButton;           // Reference to your back to main menu button
+    [SerializeField] private Button audioBackButton;           // Reference to your back to main menu button
+    [SerializeField] private Button videoButton;           // Reference to your back to main menu button
+    [SerializeField] private Button videoBackButton;           // Reference to your back to main menu button
+    [SerializeField] private Button characterButtonIcon;           // Reference to your back to main menu button
+    [SerializeField] private Button mplaceButtonIcon;           // Reference to your back to main menu button
     // Color selection buttons in pause menu
     [SerializeField] private Button purpleButton;
     [SerializeField] private Button blueButton;
@@ -34,6 +45,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button redButton;
     [SerializeField] private Button ghostButton;
     [SerializeField] private Button brownButton;
+    [SerializeField] Slider musicSlider;
+    [SerializeField] Slider effectsSlider;
     public bool isGameStarted = false; // Tracks if game has started
     public bool isGameLoggedIn = false; // Tracks if game has been logged in
     public bool hasDied = false; // Tracks if game has started
@@ -68,6 +81,9 @@ public class GameManager : MonoBehaviour
     private bool showingInstructions = false; // Track if instructions are being shown
 
     [SerializeField] private Canvas characterSelectCanvas;  // New: character select screen
+    [SerializeField] private Canvas characterMenuSelectCanvas;  // New: character select screen
+    [SerializeField] private Button characterMenu1Button;  // New: character select screen
+    [SerializeField] private Button characterMenu2Button;  // New: character select screen
     [SerializeField] private Button character1Button;       // Assign in Inspector
     [SerializeField] private Button character2Button;       // Assign in Inspector
     [SerializeField] private GameObject character1;         // Reference to Player 1 prefab
@@ -189,7 +205,11 @@ public class GameManager : MonoBehaviour
                 resumeMenu.gameObject.SetActive(false);
                 gameOverMenu.gameObject.SetActive(false);
                 HTPCanvas.gameObject.SetActive(false);
+                leaderboardCanvas.gameObject.SetActive(false);
                 LoadingCanvas.gameObject.SetActive(false);
+                OptionCanvas.gameObject.SetActive(false);
+                audioCanvas.gameObject.SetActive(false);
+                videoCanvas.gameObject.SetActive(false);
             }
             else
             {
@@ -199,7 +219,11 @@ public class GameManager : MonoBehaviour
                 resumeMenu.gameObject.SetActive(false);
                 gameOverMenu.gameObject.SetActive(false);
                 HTPCanvas.gameObject.SetActive(false);
+                leaderboardCanvas.gameObject.SetActive(false);
                 LoadingCanvas.gameObject.SetActive(false);
+                OptionCanvas.gameObject.SetActive(false);
+                audioCanvas.gameObject.SetActive(false);
+                videoCanvas.gameObject.SetActive(false);
             }
             if (instructionCanvas != null)
             {
@@ -210,6 +234,16 @@ public class GameManager : MonoBehaviour
 
             if (characterSelectCanvas != null)
                 characterSelectCanvas.gameObject.SetActive(false);
+
+            if (characterButtonIcon != null)
+            {
+                characterButtonIcon.gameObject.SetActive(false); // hide it on first load
+            }
+            if (mplaceButtonIcon != null)
+            {
+                mplaceButtonIcon.gameObject.SetActive(false); // hide it on first load
+            }
+
 
             Time.timeScale = 0f;
             hasDied = false;
@@ -242,6 +276,12 @@ public class GameManager : MonoBehaviour
         if (character2Button != null)
             character2Button.onClick.AddListener(() => OnCharacterSelected(character2));
 
+        if (characterMenu1Button != null)
+            characterMenu1Button.onClick.AddListener(() => OnCharacterMenuSelected(character1));
+
+        if (characterMenu2Button != null)
+            characterMenu2Button.onClick.AddListener(() => OnCharacterMenuSelected(character2));
+
         if (pauseButton != null)
         {
             pauseButton.onClick.AddListener(OnPauseButtonClicked);
@@ -261,6 +301,36 @@ public class GameManager : MonoBehaviour
         if (RBMMutton != null)
         {
             RBMMutton.onClick.AddListener(OnBackToMainMenuButtonClicked);
+        }
+        if (OptionsButton != null)
+        {
+            OptionsButton.onClick.AddListener(OnOptionsClicked);
+        }
+        else {             Debug.LogWarning("OptionsButton reference not set in GameManager!");
+        }   
+        if (OptionsBackButton != null)
+        {
+            OptionsBackButton.onClick.AddListener(OnOptionsBack);
+        }
+        if (videoButton != null)
+        {
+            videoButton.onClick.AddListener(OnVideoClicked);
+        }
+        if (videoBackButton != null)
+        {
+            videoBackButton.onClick.AddListener(OnVideoBack);
+        }
+        if (audioButton != null)
+        {
+            audioButton.onClick.AddListener(OnAudioClicked);
+        }
+        if (audioBackButton != null)
+        {
+            audioBackButton.onClick.AddListener(OnAudioBack);
+        }
+        if (characterButtonIcon != null)
+        {
+            characterButtonIcon.onClick.AddListener(ShowCharacterMenuSelect);
         }
 
         // Add listeners for color selection buttons
@@ -302,6 +372,16 @@ public class GameManager : MonoBehaviour
         if (inputField != null)
         {
             inputField.onEndEdit.AddListener(OnTextEntered);
+        }
+
+        if (musicSlider != null)
+        {
+            musicSlider.onValueChanged.AddListener(SetMusicVolume);
+        }
+        if (effectsSlider != null)
+        {
+            
+            effectsSlider.onValueChanged.AddListener(SetEffectsVolume);
         }
 
         
@@ -387,9 +467,7 @@ public class GameManager : MonoBehaviour
         if (characterSelectCanvas != null)
             characterSelectCanvas.gameObject.SetActive(true);
     }
-
-
-
+ 
 
     void OnCharacterSelected(GameObject selectedPrefab)
     {
@@ -431,8 +509,137 @@ public class GameManager : MonoBehaviour
     }
 
 
+    void ShowCharacterMenuSelect()
+    {
+        if (mainMenuCanvas != null)
+            mainMenuCanvas.gameObject.SetActive(false);
 
-    
+        if (characterMenuSelectCanvas != null)
+            characterMenuSelectCanvas.gameObject.SetActive(true);
+    }
+
+    //void OnCharacterMenuSelected(GameObject selectedPrefab)
+    //{
+    //    StartCoroutine(HandleCharacterSelectionTransition());
+
+    //}
+
+
+    void OnCharacterMenuSelected(GameObject selectedPrefab)
+    {
+        if (selectedPrefab == null)
+        {
+            Debug.LogError("❌ Selected character prefab is null!");
+            return;
+        }
+
+        AudioManager.Instance.PlayClickSound();
+
+        // Save selection
+        selectedCharacterIndex = selectedPrefab == character2 ? 2 : 1;
+        PlayerPrefs.SetInt("SelectedCharacterIndex", selectedCharacterIndex);
+        PlayerPrefs.Save();
+
+        Debug.Log($"✅ Character {selectedPrefab.name} selected from menu and saved (Index: {selectedCharacterIndex}).");
+
+        // Reassign player immediately in scene if game already started
+        
+        if (player != null)
+        {
+            Destroy(player);
+        }
+            // Instantiate new one
+        player = Instantiate(selectedPrefab, initialPlayerPosition, Quaternion.identity);
+        // After instantiating player and reconnecting systems:
+        var controller = player.GetComponent<PlayerController>();
+        if (controller != null)
+        {
+            controller.InitializeInput();
+        }
+
+
+        // Reconnect all systems
+        var spawner = FindObjectOfType<RewardSpawner>();
+        if (spawner != null) spawner.SetPlayer(player);
+
+        var obstacleSpawner = FindObjectOfType<ObstacleSpawner>();
+        if (obstacleSpawner != null) obstacleSpawner.SetPlayer(player);
+
+        var fixedSpawner = FindObjectOfType<FixedXObstacleSpawner2D>();
+        if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+            
+        
+        var bird = FindObjectOfType<BirdSpawner>();
+           
+        if (bird != null) bird.SetPlayer(player);
+
+            
+        var pm = FindObjectOfType<PaintManager>();
+            
+        if (pm != null) pm.SetPlayer(player);
+
+            
+        Debug.Log("✅ Player prefab re-instantiated and linked to systems during gameplay.");
+        
+        LoadingCanvas.gameObject.SetActive(true);
+        // Continue with the smooth UI transition
+        StartCoroutine(HandleCharacterSelectionTransition());
+    }
+
+
+    private IEnumerator HandleCharacterSelectionTransition()
+    {
+        
+
+
+        transitionCanvasGroup.gameObject.SetActive(true);
+        float elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / transitionDuration);
+            yield return null;
+        }
+        transitionCanvasGroup.alpha = 1f;
+
+        // Hide character select menu
+        if (characterSelectCanvas != null)
+            characterMenuSelectCanvas.gameObject.SetActive(false);
+        // Show loading screen
+        if (LoadingCanvas != null)
+            LoadingCanvas.gameObject.SetActive(true);
+
+        // Wait a bit (adjust time for smoothness)
+        yield return new WaitForSecondsRealtime(1.5f);
+
+        if (mainMenuCanvas != null)
+            mainMenuCanvas.gameObject.SetActive(true);
+        // fade out transition
+        elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / transitionDuration);
+            yield return null;
+        }
+        transitionCanvasGroup.alpha = 0f;
+        transitionCanvasGroup.gameObject.SetActive(false);
+
+        // Hide loading screen
+        if (LoadingCanvas != null)
+            LoadingCanvas.gameObject.SetActive(false);
+
+        // Show main menu again
+        if (mainMenuCanvas != null)
+            mainMenuCanvas.gameObject.SetActive(true);
+
+        // ✅ Ensure the button remains visible for possible re-selection
+        if (characterButtonIcon != null)
+            characterButtonIcon.gameObject.SetActive(true);
+
+        Debug.Log("✅ Character selection complete, returning to main menu smoothly.");
+    }
 
     void StartGame()
     {
@@ -451,10 +658,39 @@ public class GameManager : MonoBehaviour
             }
         }
 
+
         if (player != null)
         {
             player.transform.position = initialPlayerPosition;
         }
+
+        //int selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacterIndex", 1);
+        //GameObject selectedPrefab = selectedCharacterIndex == 2 ? character2 : character1;
+
+        //if (selectedPrefab != null)
+        //{
+        //    player = Instantiate(selectedPrefab, initialPlayerPosition, Quaternion.identity);
+
+        //    // reconnect all systems
+        //    var spawner = FindObjectOfType<RewardSpawner>();
+        //    if (spawner != null) spawner.SetPlayer(player);
+
+        //    var obstacleSpawner = FindObjectOfType<ObstacleSpawner>();
+        //    if (obstacleSpawner != null) obstacleSpawner.SetPlayer(player);
+
+        //    var fixedSpawner = FindObjectOfType<FixedXObstac`leSpawner2D>();
+        //    if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+        //    var bird = FindObjectOfType<BirdSpawner>();
+        //    if (bird != null) bird.SetPlayer(player);
+
+        //    var pm = FindObjectOfType<PaintManager>();
+        //    if (pm != null) pm.SetPlayer(player);
+        //}
+        //else
+        //{
+        //    Debug.LogError("❌ No player prefab found for ReturnToMainMenu.");
+        //}
 
         totalXP = 0; // Reset XP on new game
         UpdateXPText();
@@ -593,6 +829,8 @@ public class GameManager : MonoBehaviour
         // show the main menu instead of gameplay
         loginCanvas.gameObject.SetActive(false);
         mainMenuCanvas.gameObject.SetActive(true);
+        characterButtonIcon.gameObject.SetActive(true);
+        mplaceButtonIcon.gameObject.SetActive(true);
         leaderboardCanvas.gameObject.SetActive(false);
         resumeMenu.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(false);
@@ -617,6 +855,9 @@ public class GameManager : MonoBehaviour
 
             var fixedSpawner = FindObjectOfType<FixedXObstacleSpawner2D>();
             if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+            var bird = FindObjectOfType<BirdSpawner>();
+            if (bird != null) bird.SetPlayer(player);
 
             var pm = FindObjectOfType<PaintManager>();
             if (pm != null) pm.SetPlayer(player);
@@ -648,8 +889,7 @@ public class GameManager : MonoBehaviour
     {
         // show loading/transition effect if you like
         AudioManager.Instance.PlayGameplayMusic();
-        gameOverMenu.gameObject.SetActive(false);
-        transitionCanvasGroup.gameObject.SetActive(true);
+
         float elapsedTime = 0f;
         while (elapsedTime < transitionDuration)
         {
@@ -658,6 +898,10 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         transitionCanvasGroup.alpha = 1f;
+
+        gameOverMenu.gameObject.SetActive(false);
+        transitionCanvasGroup.gameObject.SetActive(true);
+        
 
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
         asyncLoad.allowSceneActivation = false;
@@ -687,7 +931,7 @@ public class GameManager : MonoBehaviour
         loginCanvas.gameObject.SetActive(false);
         mainMenuCanvas.gameObject.SetActive(false);
         //gameModeMenuCanvas.SetActive(false);
-        pauseMenu.gameObject.SetActive(true);
+        
         leaderboardCanvas.gameObject.SetActive(false);
         gameOverMenu.gameObject.SetActive(false);
         HTPCanvas.gameObject.SetActive(false);
@@ -714,7 +958,7 @@ public class GameManager : MonoBehaviour
 
             Debug.Log("✅ Player re-instantiated after restart.");
         }
-
+        pauseMenu.gameObject.SetActive(true);
         Time.timeScale = 1f;
         isGameStarted = true;
         UpdateXPText();
@@ -1146,6 +1390,19 @@ public class GameManager : MonoBehaviour
 
     public async void GetLeaderboard()
     {
+        LoadingCanvas.gameObject.SetActive(true);
+        LoadingCanvas.gameObject.SetActive(true);
+        float elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / transitionDuration);
+            //yield return null;
+        }
+        transitionCanvasGroup.alpha = 1f;
+
+        //gameOverMenu.gameObject.SetActive(false);
+        transitionCanvasGroup.gameObject.SetActive(true);
         // List of all possible canvases
         Canvas[] allCanvases = { mainMenuCanvas, gameOverMenu  };
 
@@ -1169,7 +1426,7 @@ public class GameManager : MonoBehaviour
  
         // Perform the transition using the detected current canvas
         currentCanvas.gameObject.SetActive(false);
-        LoadingCanvas.gameObject.SetActive(true);
+        
         Debug.Log("Dots loading");
         //loadingDots.StartLoading();
         Debug.Log("Reading blockchain data");
@@ -1182,8 +1439,19 @@ public class GameManager : MonoBehaviour
         UpdateScoreFields();
         UpdateNameFields();
         Debug.Log("done Reading");
-        LoadingCanvas.gameObject.SetActive(false);
+        
         leaderboardCanvas.gameObject.SetActive(true);
+        LoadingCanvas.gameObject.SetActive(false);
+        // fade out transition
+        elapsedTime = 0f;
+        while (elapsedTime < transitionDuration)
+        {
+            elapsedTime += Time.unscaledDeltaTime;
+            transitionCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / transitionDuration);
+            //yield return null;
+        }
+        transitionCanvasGroup.alpha = 0f;
+        transitionCanvasGroup.gameObject.SetActive(false);
         ////Read data
         //Debug.Log("Reading blockchain data");
         //WalletConnectManager.Instance.ReadName(0);
@@ -1254,5 +1522,69 @@ public class GameManager : MonoBehaviour
         {
             player.ResetHealth();
         }
+    }
+
+    private void SetMusicVolume(float value)
+    {
+        Debug.Log($"Music Slider Value: {value}");
+        float volume = Mathf.Clamp(value, 0.0001f, 1f);
+        AudioManager.Instance.SetMusicVolume(volume);
+    }
+
+    private void SetEffectsVolume(float value)
+    {
+        Debug.Log($"Effexts Slider Value: {value}");
+        float volume = Mathf.Clamp(value, 0.0001f, 1f);
+        AudioManager.Instance.SetEffectsVolume(volume);
+    }
+
+    public void OnOptionsClicked()
+    {
+        //Debug.Log("Options Clicked");
+        //AudioManager.Instance.PlayClickSound();
+        if (OptionCanvas == null || mainMenuCanvas == null)
+        {
+            Debug.LogError("OptionCanvas or mainMenuCanvas reference is not set in GameManager!");
+            return;
+        }
+        mainMenuCanvas.gameObject.SetActive(false);
+        //Debug.Log("main menu disabled");
+        OptionCanvas.gameObject.SetActive(true);
+        //Debug.Log("options enabled");
+    }
+
+    public void OnOptionsBack()
+    {
+        AudioManager.Instance.PlayClickSound();
+        mainMenuCanvas.gameObject.SetActive(true);
+        OptionCanvas.gameObject.SetActive(false);
+    }
+
+    public void OnAudioClicked()
+    {
+        AudioManager.Instance.PlayClickSound();
+        OptionCanvas.gameObject.SetActive(false);
+        audioCanvas.gameObject.SetActive(true);
+    }
+
+    public void OnAudioBack()
+    {
+        AudioManager.Instance.PlayClickSound();
+        OptionCanvas.gameObject.SetActive(true);
+        audioCanvas.gameObject.SetActive(false);
+    }
+
+    private void OnVideoClicked()
+    {
+        AudioManager.Instance.PlayClickSound();
+        OptionCanvas.gameObject.SetActive(false);
+        videoCanvas.gameObject.SetActive(true);
+    }
+
+    private void OnVideoBack()
+    {
+        AudioManager.Instance.PlayClickSound();
+        OptionCanvas.gameObject.SetActive(true);
+        videoCanvas.gameObject.SetActive(false);
     }
 }

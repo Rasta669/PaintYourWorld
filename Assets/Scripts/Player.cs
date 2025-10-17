@@ -6,6 +6,8 @@ using UnityEngine.InputSystem;
 
 public class PlayerController : MonoBehaviour
 {
+    //public static PlayerController Instance { get; private set; }
+
     [Header("Movement Settings")]
     [SerializeField] private float moveSpeed = 5f;
     [SerializeField] private float jumpForce = 10f;
@@ -48,6 +50,12 @@ public class PlayerController : MonoBehaviour
     private InputActionAsset inputActions;
     private InputAction moveAction;
     private InputAction jumpAction;
+
+    [Header("Animator Controllers")]
+    [SerializeField] private RuntimeAnimatorController solidAnimator;
+    [SerializeField] private RuntimeAnimatorController transparentAnimator;
+
+
 
     void Start()
     {
@@ -93,22 +101,62 @@ public class PlayerController : MonoBehaviour
         // Safely stop coroutines to prevent them from accessing destroyed data
         StopAllCoroutines();
 
-        // Unsubscribe from input events safely
+        //// Unsubscribe from input events safely
+        //if (jumpAction != null)
+        //{
+        //    jumpAction.performed -= OnJumpPerformed;
+        //    jumpAction.Disable();
+        //}
+
+        //if (moveAction != null)
+        //{
+        //    moveAction.Disable();
+        //}
+
+        //// Prevent null access on destruction
+        //UI = null;
+        //paintManager = null;
+        //joystick = null;
+    }
+
+    public void InitializeInput()
+    {
+        if (inputActions == null)
+            inputActions = GetComponent<PlayerInput>().actions;
+
+        moveAction = inputActions.FindAction("Player/Move");
+        jumpAction = inputActions.FindAction("Player/Jump");
+
+        if (moveAction != null) moveAction.Enable();
         if (jumpAction != null)
         {
+            jumpAction.Enable();
             jumpAction.performed -= OnJumpPerformed;
-            jumpAction.Disable();
+            jumpAction.performed += OnJumpPerformed;
         }
 
-        if (moveAction != null)
+        Debug.Log("🎮 Player input system reinitialized.");
+    }
+
+
+    private void OnEnable()
+    {
+        if (inputActions == null && TryGetComponent<PlayerInput>(out var pi))
+            inputActions = pi.actions;
+
+        if (jumpAction == null)
+            jumpAction = inputActions.FindAction("Player/Jump");
+        if (moveAction == null)
+            moveAction = inputActions.FindAction("Player/Move");
+
+        if (jumpAction != null)
         {
-            moveAction.Disable();
+            jumpAction.Enable();
+            jumpAction.performed -= OnJumpPerformed;
+            jumpAction.performed += OnJumpPerformed;
         }
-
-        // Prevent null access on destruction
-        UI = null;
-        paintManager = null;
-        joystick = null;
+        if (moveAction != null)
+            moveAction.Enable();
     }
 
 
@@ -229,6 +277,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    public void SetTransparentMode(bool transparent)
+    {
+        if (animator == null) return;
+
+        animator.runtimeAnimatorController = transparent ? transparentAnimator : solidAnimator;
+    }
+    
+
     private void CheckGrounded()
     {
         RaycastHit2D hit = Physics2D.BoxCast(
@@ -318,6 +374,7 @@ public class PlayerController : MonoBehaviour
     private IEnumerator EnableGhostMode(float duration)
     {
         isGhostMode = true;
+        SetTransparentMode(true);
         Debug.Log("👻 Ghost mode activated!");
 
         // Make the player semi-transparent for visual feedback
@@ -362,8 +419,9 @@ public class PlayerController : MonoBehaviour
             c.a = 1f;
             spriteRenderer.color = c;
         }
-
+        
         isGhostMode = false;
+        SetTransparentMode(false);
         Debug.Log("👻 Ghost mode ended!");
     }
 

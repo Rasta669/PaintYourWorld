@@ -61,6 +61,6 @@ public class FixedXObstacleSpawner2D : MonoBehaviour
         hasSpawnedFirst = false; // Reset first spawn
         nextSpawnX = 0f;
 
-        Debug.Log($"ObstacleSpawner player set to {player.name}");
+        //Debug.Log($"ObstacleSpawner player set to {player.name}");
     }
 }

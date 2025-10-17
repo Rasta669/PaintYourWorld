@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEngine.Audio;
 
@@ -44,22 +44,42 @@ public class AudioManager : MonoBehaviour
         }
     }
 
-    
 
-    public void SetMasterVolume(float volume)
+
+    public void SetMusicVolume(float value)
     {
-        audioMixer.SetFloat("Master", Mathf.Log10(volume) * 20);
+        // Slider range 0 → 1
+        // Map to decibels (-80 dB = silence, 0 dB = full volume, +10 dB = louder boost)
+        float dB;
+
+        if (value <= 0.0001f)
+            dB = -80f; // completely mute
+        else
+            dB = Mathf.Lerp(-30f, 10f, value); // you can adjust range here
+
+        audioMixer.SetFloat("Music", dB);
+        Debug.Log($"🎵 Music Volume: Slider={value}, dB={dB}");
     }
 
-    public void SetMusicVolume(float volume)
+    public void SetEffectsVolume(float value)
     {
-        audioMixer.SetFloat("Music", Mathf.Log10(volume) * 20);
+        float dB;
+
+        if (value <= 0.0001f)
+            dB = -80f;
+        else
+            dB = Mathf.Lerp(-30f, 10f, value); // same loudness curve
+
+        audioMixer.SetFloat("Effects", dB);
+        Debug.Log($"💥 Effects Volume: Slider={value}, dB={dB}");
     }
 
-    public void SetEffectsVolume(float volume)
-    {
-        audioMixer.SetFloat("Music/Effects", Mathf.Log10(volume) * 20);
-    }
+
+    //public void SetEffectsVolume(float volume)
+    //{
+    //    audioMixer.SetFloat("Effects", Mathf.Log10(volume) * 20);
+    //}
+
 
     public void PlayMenuMusic() => PlayMusic(menuMusic);
     public void PlayGameplayMusic() => PlayMusic(gameplayMusic);

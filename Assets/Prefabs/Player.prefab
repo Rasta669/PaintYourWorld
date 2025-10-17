@@ -118,6 +118,8 @@ MonoBehaviour:
   jumpParticles: {fileID: 0}
   landParticles: {fileID: 0}
   maxHealth: 3
+  solidAnimator: {fileID: 9100000, guid: 75eb2bcd523fd9b45925cac2430527c0, type: 2}
+  transparentAnimator: {fileID: 9100000, guid: 39e934a8b88787e4ab1cc72122d506cd, type: 2}
 --- !u!61 &777259977338551182
 BoxCollider2D:
   m_ObjectHideFlags: 0

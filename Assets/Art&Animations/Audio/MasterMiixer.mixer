@@ -19,6 +19,22 @@ AudioMixerGroupController:
   m_Mute: 0
   m_Solo: 0
   m_BypassEffects: 0
+--- !u!244 &-378275088522179281
+AudioMixerEffectController:
+  m_ObjectHideFlags: 3
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_Name: 
+  m_EffectID: 6bb9977da237fd04db3843d32d5e989f
+  m_EffectName: Highpass Simple
+  m_MixLevel: 10b6544b33b7b1349917776612f724d4
+  m_Parameters:
+  - m_ParameterName: Cutoff freq
+    m_GUID: 8f5126e8aff556a47bad87b7219ef3fc
+  m_SendTarget: {fileID: 0}
+  m_EnableWetMix: 0
+  m_Bypass: 0
 --- !u!241 &24100000
 AudioMixerController:
   m_ObjectHideFlags: 0
@@ -36,11 +52,15 @@ AudioMixerController:
   m_UpdateMode: 0
   m_ExposedParameters:
   - guid: b9c61d64d3d5be34b84e01ecacfe8a19
-    name: MyExposedParam 1
+    name: Effects
+  - guid: 6bb2ae1261294154c84bcc89d6d53e42
+    name: Effects
   - guid: 8f9cd7b69e98f404b807fc2934916af8
-    name: MyExposedParam 2
+    name: Mater
   - guid: 1c6193ad67e37ae4fbdcb60d2d5d3981
-    name: MyExposedParam
+    name: Music
+  - guid: bb280177297547b4096c7e19c80f50f3
+    name: Music
   m_AudioMixerGroupViews:
   - guids:
     - 79c204afcede24e45a3d8bb1557ba5d0
@@ -59,6 +79,7 @@ AudioMixerGroupController:
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 79c204afcede24e45a3d8bb1557ba5d0
   m_Children:
+  - {fileID: -3050682441937301080}
   - {fileID: 1325181177135854707}
   m_Volume: 8f9cd7b69e98f404b807fc2934916af8
   m_Pitch: c0957c04b7e27f840bd4ae0a67be7286
@@ -92,7 +113,9 @@ AudioMixerSnapshotController:
   m_Name: Snapshot
   m_AudioMixer: {fileID: 24100000}
   m_SnapshotID: 3fe397de6d8bcdb44870026ae93d2ab8
-  m_FloatValues: {}
+  m_FloatValues:
+    b9c61d64d3d5be34b84e01ecacfe8a19: 0
+    1c6193ad67e37ae4fbdcb60d2d5d3981: 0
   m_TransitionOverrides: {}
 --- !u!243 &1325181177135854707
 AudioMixerGroupController:
@@ -103,8 +126,7 @@ AudioMixerGroupController:
   m_Name: Music
   m_AudioMixer: {fileID: 24100000}
   m_GroupID: 33b5c9e38eb02b9479618fe99abb3251
-  m_Children:
-  - {fileID: -3050682441937301080}
+  m_Children: []
   m_Volume: 1c6193ad67e37ae4fbdcb60d2d5d3981
   m_Pitch: bb280177297547b4096c7e19c80f50f3
   m_Send: 00000000000000000000000000000000

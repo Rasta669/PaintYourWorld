@@ -16,6 +16,7 @@ using UnityEditor;
 
 
 
+
 public class WalletConnectManager : MonoBehaviour
 {
     public static WalletConnectManager Instance { get; private set; }
