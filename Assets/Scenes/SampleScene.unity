@@ -653,9 +653,9 @@ MonoBehaviour:
   poolSize: 10
   spawnBufferAhead: 3
   distanceBetweenSpawns: 0
-  yOffsetRange: 3
-  spawnInterval: 5
-  initialSpawnDelay: 10
+  yOffsetRange: 1
+  spawnInterval: 10
+  initialSpawnDelay: 50
   minSpeed: 1
   maxSpeed: 2
   despawnDistance: 25
@@ -934,15 +934,19 @@ MonoBehaviour:
   <Amount>k__BackingField: 0.01
   <ToAddress>k__BackingField: 0xAFB994C36500Dd947b7766b6acCea72A09B730CC
   <TokenName>k__BackingField: Color
-  <TokenContractAddress>k__BackingField: 0xb271283E6b7eCD8F56F0187934Cf11ffa9A953d9
+  <TokenContractAddress>k__BackingField: 0x66B138f2FE05b6b3d2e1f24bD923672D9A9E1843
+  <BuyTokenContractAddress>k__BackingField: 0x66B138f2FE05b6b3d2e1f24bD923672D9A9E1843
   <TokenAmount>k__BackingField: 
   <TokenRecipientAddress>k__BackingField: 
-  <ClaimTokenContractAddress>k__BackingField: 0xb271283E6b7eCD8F56F0187934Cf11ffa9A953d9
+  <ClaimTokenContractAddress>k__BackingField: 0x66B138f2FE05b6b3d2e1f24bD923672D9A9E1843
   <ClaimTokenAmount>k__BackingField: 0.0000000000000001
   <ClaimNftContractAddress>k__BackingField: 0x9682c77e2B597860183e1806c67E7839A631673F
   <ClaimNftAmount>k__BackingField: 1
+  <BuyNftAddress>k__BackingField: 0x84C8b08e05d003A6705D62649D02242d0298a82c
   <GameManager>k__BackingField: {fileID: 1823978397}
   <ClaimButton>k__BackingField: {fileID: 1071717638}
+  <BuyButton>k__BackingField: {fileID: 1283710164}
+  <UseButton>k__BackingField: {fileID: 1868294052}
   <ConnectButton>k__BackingField: {fileID: 0}
   <DisconnectButton>k__BackingField: {fileID: 0}
   <ConnectedText>k__BackingField: {fileID: 404675137}
@@ -951,6 +955,8 @@ MonoBehaviour:
   <EthBalanceText>k__BackingField: {fileID: 2085947082}
   <CustomTokenBalanceText>k__BackingField: {fileID: 734099436}
   <ClaimedTokenBalanceText>k__BackingField: {fileID: 1181871301}
+  <BuyTokenBalanceText>k__BackingField: {fileID: 1809463938}
+  <UseTokenText>k__BackingField: {fileID: 931355220}
   <NftDisplayCanvas>k__BackingField: {fileID: 0}
   <NftDisplayPrefab>k__BackingField: {fileID: 0}
   <NftDisplayParent>k__BackingField: {fileID: 0}
@@ -1253,6 +1259,17 @@ Transform:
   - {fileID: 364151603}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &931355220 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3324336846526600398, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+  m_PrefabInstance: {fileID: 9087303043559377471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &976542284
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2008,7 +2025,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5362924225422893410, guid: 57bc33d595a2e884082f3cc1db0fa050, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: 118.40015
+      value: 118.40039
       objectReference: {fileID: 0}
     - target: {fileID: 6552933492151205937, guid: 57bc33d595a2e884082f3cc1db0fa050, type: 3}
       propertyPath: m_AnchoredPosition.y
@@ -2037,6 +2054,17 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1283710164 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 5078048941331552686, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+  m_PrefabInstance: {fileID: 9087303043559377471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1 &1355491163
@@ -2642,7 +2670,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &1637347258
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2837,6 +2865,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 905833686}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1809463938 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 1080802224421724985, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+  m_PrefabInstance: {fileID: 9087303043559377471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1823978397 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 990904210079689015, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
@@ -2927,6 +2966,17 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &1868294052 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3244510970946610004, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+  m_PrefabInstance: {fileID: 9087303043559377471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1912625085
 GameObject:
   m_ObjectHideFlags: 0
@@ -3482,7 +3532,27 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 707937803}
+    - target: {fileID: 3244510970946610004, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 707937803}
     - target: {fileID: 3876594141621899165, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 707937803}
+    - target: {fileID: 4660226295412492231, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4660226295412492231, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4660226295412492231, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5078048941331552686, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 707937803}
@@ -3493,6 +3563,18 @@ PrefabInstance:
     - target: {fileID: 5434503978589648408, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_Name
       value: UIManager
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689455757470090944, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689455757470090944, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 5689455757470090944, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6656769383099879165, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_LocalPosition.x
@@ -3532,6 +3614,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6656769383099879165, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7374988372648534377, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_SizeDelta.x
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7888074450139289298, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}

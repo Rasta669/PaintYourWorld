@@ -38,6 +38,8 @@ public class WalletConnectManager : MonoBehaviour
     [field: SerializeField]
     public string TokenContractAddress { get; set; }
     [field: SerializeField]
+    public string BuyTokenContractAddress { get; set; }
+    [field: SerializeField]
     public string TokenAmount { get; set; }
     [field: SerializeField]
     public string TokenRecipientAddress { get; set; }
@@ -51,11 +53,17 @@ public class WalletConnectManager : MonoBehaviour
     public string ClaimNftContractAddress { get; set; }
     [field: SerializeField]
     public string ClaimNftAmount { get; set; }
+    [field: SerializeField]
+    public string BuyNftAddress { get; set; }
 
     [field: SerializeField, Header("UI Elements")]
     public GameManager GameManager { get; set; }
     [field: SerializeField]
     public Button ClaimButton { get; set; }
+    [field: SerializeField]
+    public Button BuyButton { get; set; }
+    [field: SerializeField]
+    public Button UseButton { get; set; }
     [field: SerializeField]
     public GameObject ConnectButton { get; set; }
     [field: SerializeField]
@@ -72,6 +80,10 @@ public class WalletConnectManager : MonoBehaviour
     public TextMeshProUGUI CustomTokenBalanceText { get; set; }
     [field: SerializeField]
     public TextMeshProUGUI ClaimedTokenBalanceText { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI BuyTokenBalanceText { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenText { get; set; }
 
     [field: SerializeField, Header("NFT Display Canvas")]
     public Canvas NftDisplayCanvas { get; set; }
@@ -616,6 +628,237 @@ public class WalletConnectManager : MonoBehaviour
         }
     }
 
+    [Obsolete]
+    public async void Buy()
+    {
+        try
+        {
+            if (BuyButton != null) BuyButton.interactable = false;
+
+            if (BuyTokenBalanceText != null)
+            {
+                BuyTokenBalanceText.gameObject.SetActive(true);
+                BuyTokenBalanceText.text = "Buying...";
+            }
+
+            if (!string.IsNullOrEmpty(BuyTokenContractAddress))
+            {
+                var tokencontract = await ThirdwebManager.Instance.GetContract(BuyTokenContractAddress, ActiveChainId);
+                var decimals = 2;
+                var tokenBalance = await tokencontract.ERC20_BalanceOf(walletAddress);
+                Debug.Log($"Balance: {tokenBalance} tokens");
+                var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+                if (tokenBalance < 200) {
+                    if (BuyTokenBalanceText != null)
+                    {
+                        BuyTokenBalanceText.gameObject.SetActive(true);
+                        BuyTokenBalanceText.text = "Need 200 color...";
+                    }
+                }
+                else
+                {                    
+                    var nftcontract = await ThirdwebManager.Instance.GetContract(BuyNftAddress, ActiveChainId);
+                    Debug.Log("Approving token spend...");
+                    await tokencontract.ERC20_Approve(wallet, BuyNftAddress, tokenBalance);
+                    Debug.Log("Token spend approved.");
+                    BigInteger nftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
+                    //Debug.Log("Waiting here.
+
+                    Debug.Log($"Balance: {nftBalance} NFTs");
+                    var transactionResult = await nftcontract.DropERC721_Claim(wallet, walletAddress, 1);
+                    Debug.Log($"NFTs claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
+                    var finalnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
+                    Debug.Log($"Balance: {finalnftBalance} NFTs");
+                    if (finalnftBalance == nftBalance)
+                    {
+                        Debug.LogError($"No NFTs owned by {walletAddress} after claim. Check contract logic or transaction.");
+                        if (ClaimedNFTText != null)
+                        {
+                            ClaimedNFTText.text = $"No NFTs owned. Tx Hash: {transactionResult.TransactionHash}";
+                        }
+                        return;
+                    }
+
+                    if (finalnftBalance < 1)
+                    {
+                        //Disable buy button
+                        if (UseButton != null)
+                        {
+                            UseButton.interactable = false;
+                        }
+                    }
+                    else {
+                        //Enable use button
+                        if (UseButton != null) {
+                            UseButton.interactable = true;
+                        }
+                    }
+
+                    if (BuyTokenBalanceText != null)
+                    {
+                        //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
+                        BuyTokenBalanceText.text = $"Claimed!";
+                        //ClaimedNft.SetActive(true);
+                        SetNft();
+
+                    }
+
+                    if (BuyButton != null)
+                    {
+                        //GameManager.LevelClaimed();
+                        BuyButton.interactable = true;
+                    }
+                }
+                //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+                //if (CustomTokenBalanceText != null)
+                //{
+                //    CustomTokenBalanceText.gameObject.SetActive(true);
+                //    CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
+                //}
+            }
+        }
+        catch (System.Exception ex)
+        {
+            if (BuyButton != null) BuyButton.interactable = true;
+            Debug.LogError($"Failed to open URL: {ex.Message}");
+
+        }
+    }
+
+    
+    public void SetNft()
+    {
+        //if (isBrown)
+        //{
+        //    //audioManager.PlayPortalAnimationSound();
+        //    BrownNft.SetActive(true);
+        //}
+        //if (isWhite)
+        //{
+        //    //audioManager.PlayPortalAnimationSound();
+        //    WhiteNft.SetActive(true);
+        //}
+
+        
+        Debug.Log($"Bought");
+    }
+
+    [Obsolete]
+    public async void UseColor()
+    {
+        try {
+
+            if (UseButton != null) UseButton.interactable = false;
+
+            if (UseTokenText != null)
+            {
+                UseTokenText.gameObject.SetActive(true);
+                UseTokenText.text = "Buying...";
+            }
+
+            if (!string.IsNullOrEmpty(BuyNftAddress))
+            {
+                var nftcontract = await ThirdwebManager.Instance.GetContract(BuyNftAddress, ActiveChainId);
+                var initialnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
+                Debug.Log($"Balance: {initialnftBalance} tokens");
+               
+                if (initialnftBalance < 1)
+                {
+                    if (UseTokenText != null)
+                    {
+                        UseTokenText.gameObject.SetActive(true);
+                        UseTokenText.text = "No sprays buy more in store...";
+                    }
+                }
+                else
+                {
+                    //BigInteger nftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
+                    Debug.Log("Waiting here.");
+
+                    BigInteger tokenId = 0;
+                    var ownedNfts = await nftcontract.ERC721_GetOwnedNFTs(walletAddress);
+                    Debug.Log("Passed here.");
+                    if (ownedNfts.Count > 0)
+                    {
+                        tokenId = ownedNfts.Select(nft => BigInteger.Parse(nft.Metadata.Id)).Min();
+                        Debug.Log($"Small tokenId:{tokenId}");
+                    }
+                    else
+                    {
+                        UseTokenText.text = "No sprays buy more in store...";
+                    }
+
+                    Debug.Log($"Smallest Token ID: {tokenId}");
+                    //Debug.Log($"Balance: {nftBalance} NFTs");
+                    var transactionResult = await nftcontract.DropER721_Burn(wallet, tokenId);
+                    Debug.Log($"NFTs burned successfully! Transaction Hash: {transactionResult.TransactionHash}");
+                    var finalnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
+                    Debug.Log($"Balance: {finalnftBalance} NFTs");
+
+                    if (finalnftBalance == initialnftBalance)
+                    {
+                        Debug.LogError($"No NFTs owned by {walletAddress} after claim. Check contract logic or transaction.");
+                        if (UseTokenText != null)
+                        {
+                            UseTokenText.text = $"No NFTs owned. Tx Hash: {transactionResult.TransactionHash}";
+                        }
+                        return;
+                    }
+
+                    GameManager.UseColor(0);
+
+                    if (finalnftBalance < 1)
+                    {
+                        //Disable use button
+                        if (UseButton != null)
+                        {
+                            UseButton.interactable = false;
+                        }
+
+                        if (UseTokenText != null)
+                        {
+                            //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
+                            UseTokenText.text = $"Now You can use it in the game!";
+                            //ClaimedNft.SetActive(true);
+                            //SetNft();
+
+                        }
+
+                    }
+
+                    if (UseTokenText != null)
+                    {
+                        //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
+                        UseTokenText.text = $"Now You can use it in the game!";
+                        //ClaimedNft.SetActive(true);
+                        //SetNft();
+
+                    }
+
+                    if (UseButton != null)
+                    {
+                        //GameManager.LevelClaimed();
+                        UseButton.interactable = true;
+                    }
+                }
+                //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+                //if (CustomTokenBalanceText != null)
+                //{
+                //    CustomTokenBalanceText.gameObject.SetActive(true);
+                //    CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
+                //}
+            }
+            else
+            {
+                Debug.LogError("BuyNftAddress is null or empty.");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogError($"Failed to use color: {ex.Message}");
+            if (UseButton != null) UseButton.interactable = true;
+        }
+    }
     public async void ConnectWithEcosystem()
     {
         if (thirdwebManager == null)

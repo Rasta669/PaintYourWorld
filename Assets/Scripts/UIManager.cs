@@ -24,6 +24,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas OptionCanvas;
     [SerializeField] private Canvas videoCanvas;
     [SerializeField] private Canvas audioCanvas;
+    //[SerializeField] private GameObject characterPanel;
+    //[SerializeField] private GameObject colorsPanel;
+    //[SerializeField] private GameObject myAssetsPanel;
+    
     [SerializeField] private Button startButton;         // Reference to your start button
     [SerializeField] private Button pauseButton;         // Reference to your pause button
     [SerializeField] private Button resumeButton;        // Reference to your resume button
@@ -38,6 +42,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button videoBackButton;           // Reference to your back to main menu button
     [SerializeField] private Button characterButtonIcon;           // Reference to your back to main menu button
     [SerializeField] private Button mplaceButtonIcon;           // Reference to your back to main menu button
+    [SerializeField] private Button mplaceButton;           // Reference to your back to resume menu button
+    [SerializeField] private Button mplaceBackButton;           // Reference to your back to resume menu button
+    //[SerializeField] private Button characterButton;           // Reference to your back to resume menu button
+    //[SerializeField] private Button myAssetsButton;           // Reference to your back to resume menu button
+    //[SerializeField] private Button colorsButton;           // Reference to your back to resume menu button
     // Color selection buttons in pause menu
     [SerializeField] private Button purpleButton;
     [SerializeField] private Button blueButton;
@@ -45,6 +54,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button redButton;
     [SerializeField] private Button ghostButton;
     [SerializeField] private Button brownButton;
+    [SerializeField] private Button claimButton;
     [SerializeField] Slider musicSlider;
     [SerializeField] Slider effectsSlider;
     public bool isGameStarted = false; // Tracks if game has started
@@ -52,6 +62,7 @@ public class GameManager : MonoBehaviour
     public bool hasDied = false; // Tracks if game has started
     [SerializeField] private Canvas pauseMenu;
     [SerializeField] private Canvas resumeMenu;
+    [SerializeField] private Canvas marketplaceCanvas;
     [SerializeField] private Canvas gameOverMenu;
     [SerializeField] private CanvasGroup transitionCanvasGroup;
     [SerializeField] private float transitionDuration = 0.5f;
@@ -91,7 +102,8 @@ public class GameManager : MonoBehaviour
 
     private bool hasSelectedCharacter = false;              // Ensures only first-time character selection
     private bool hasSeenInstructions = false;               // Ensures instructions shown only once
-
+    private bool brownEnabled = false;
+    private bool ghostEnabled = false;
 
     // Camera follow settings
     public float smoothSpeed = 0.125f; // How smooth the camera follows (lower = smoother but slower)
@@ -210,6 +222,7 @@ public class GameManager : MonoBehaviour
                 OptionCanvas.gameObject.SetActive(false);
                 audioCanvas.gameObject.SetActive(false);
                 videoCanvas.gameObject.SetActive(false);
+                marketplaceCanvas.gameObject.SetActive(false);
             }
             else
             {
@@ -224,6 +237,7 @@ public class GameManager : MonoBehaviour
                 OptionCanvas.gameObject.SetActive(false);
                 audioCanvas.gameObject.SetActive(false);
                 videoCanvas.gameObject.SetActive(false);
+                marketplaceCanvas.gameObject.SetActive(false);
             }
             if (instructionCanvas != null)
             {
@@ -239,9 +253,33 @@ public class GameManager : MonoBehaviour
             {
                 characterButtonIcon.gameObject.SetActive(false); // hide it on first load
             }
+
+
             if (mplaceButtonIcon != null)
             {
                 mplaceButtonIcon.gameObject.SetActive(false); // hide it on first load
+            }
+
+
+            if (ghostButton != null)
+            {
+                if (ghostEnabled)
+                {
+                    ghostButton.gameObject.SetActive(true); // show if previously enabled
+                }
+                else
+                    ghostButton.gameObject.SetActive(false); // hide it on first load
+            }
+
+
+            if (brownButton != null)
+            {
+                if (brownEnabled)
+                {
+                    brownButton.gameObject.SetActive(true); // show if previously enabled
+                }
+                else
+                    brownButton.gameObject.SetActive(false); // hide it on first load
             }
 
 
@@ -306,8 +344,11 @@ public class GameManager : MonoBehaviour
         {
             OptionsButton.onClick.AddListener(OnOptionsClicked);
         }
-        else {             Debug.LogWarning("OptionsButton reference not set in GameManager!");
+        else 
+        {             
+            Debug.LogWarning("OptionsButton reference not set in GameManager!");
         }   
+
         if (OptionsBackButton != null)
         {
             OptionsBackButton.onClick.AddListener(OnOptionsBack);
@@ -332,6 +373,30 @@ public class GameManager : MonoBehaviour
         {
             characterButtonIcon.onClick.AddListener(ShowCharacterMenuSelect);
         }
+
+        if (mplaceButton != null)
+        {
+            mplaceButton.onClick.AddListener(OnMplaceClicked);
+        }
+        if (mplaceBackButton != null)
+        {
+            mplaceBackButton.onClick.AddListener(OnMplaceBack);
+        }
+
+        //if (characterButton != null)
+        //{
+        //    characterButton.onClick.AddListener(OnCharacterClicked);
+        //}
+
+        //if (colorsButton != null)
+        //{
+        //    colorsButton.onClick.AddListener(OnColorsClicked);
+        //}
+
+        //if (myAssetsButton != null)
+        //{
+        //    myAssetsButton.onClick.AddListener(OnMyAssetsClicked);
+        //}
 
         // Add listeners for color selection buttons
         if (purpleButton != null)
@@ -400,6 +465,7 @@ public class GameManager : MonoBehaviour
         {
             FollowPlayer();
         }
+       
     }
 
     void FollowPlayer()
@@ -607,8 +673,8 @@ public class GameManager : MonoBehaviour
         if (characterSelectCanvas != null)
             characterMenuSelectCanvas.gameObject.SetActive(false);
         // Show loading screen
-        if (LoadingCanvas != null)
-            LoadingCanvas.gameObject.SetActive(true);
+        //if (LoadingCanvas != null)
+        //    LoadingCanvas.gameObject.SetActive(true);
 
         // Wait a bit (adjust time for smoothness)
         yield return new WaitForSecondsRealtime(1.5f);
@@ -627,8 +693,8 @@ public class GameManager : MonoBehaviour
         transitionCanvasGroup.gameObject.SetActive(false);
 
         // Hide loading screen
-        if (LoadingCanvas != null)
-            LoadingCanvas.gameObject.SetActive(false);
+        //if (LoadingCanvas != null)
+        //    LoadingCanvas.gameObject.SetActive(false);
 
         // Show main menu again
         if (mainMenuCanvas != null)
@@ -647,6 +713,16 @@ public class GameManager : MonoBehaviour
         if (instructionCanvas != null)
         {
             instructionCanvas.gameObject.SetActive(false);
+        }
+        if (LoadingCanvas != null)
+        {
+            LoadingCanvas.gameObject.SetActive(false);
+        }
+
+
+        if (transitionCanvasGroup != null)
+        {
+            transitionCanvasGroup.gameObject.SetActive(false);
         }
         if (mainMenuCanvas != null)
         {
@@ -835,6 +911,33 @@ public class GameManager : MonoBehaviour
         resumeMenu.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(false);
         gameOverMenu.gameObject.SetActive(false);
+        if (brownEnabled)
+        {
+            if (brownButton != null)
+                brownButton.gameObject.SetActive(true); // show if previously enabled
+        }
+        else
+        {
+            if (brownButton != null)
+                brownButton.gameObject.SetActive(false); // hide if not enabled
+        }
+
+        if (ghostEnabled)
+        {
+            if (ghostButton != null)
+                ghostButton.gameObject.SetActive(true); // show if previously enabled
+        }
+        else
+        {
+            if (ghostButton != null)
+                ghostButton.gameObject.SetActive(false); // hide if not enabled
+        }
+
+        if (claimButton != null)
+        {
+            claimButton.interactable = true;
+        }
+
         Time.timeScale = 0f;
         UpdateXPText();
 
@@ -877,6 +980,8 @@ public class GameManager : MonoBehaviour
         isGameStarted = false;
         hasDied = false;
         isGameLoggedIn  = true; // Keep logged in when returning to main menu
+        brownEnabled = false;
+        ghostEnabled = false;
     }
 
     public void RestartGame()
@@ -957,6 +1062,33 @@ public class GameManager : MonoBehaviour
             if (pm != null) pm.SetPlayer(player);
 
             Debug.Log("✅ Player re-instantiated after restart.");
+        }
+
+        Debug.Log(brownEnabled + " - " + ghostEnabled); 
+        if (brownEnabled )
+        {
+            if (brownButton != null)
+                brownButton.gameObject.SetActive(true); // show if previously enabled
+        }
+        else
+        {
+           if (brownButton != null)
+               brownButton.gameObject.SetActive(false); // hide if not enabled
+        }
+
+        if (ghostEnabled )
+        {
+            if (ghostButton != null)
+                ghostButton.gameObject.SetActive(true); // show if previously enabled
+        }
+        else
+        {
+            if (ghostButton != null)
+                ghostButton.gameObject.SetActive(false); // hide if not enabled
+        }
+        if (claimButton != null)
+        {
+            claimButton.interactable = true;
         }
         pauseMenu.gameObject.SetActive(true);
         Time.timeScale = 1f;
@@ -1293,6 +1425,7 @@ public class GameManager : MonoBehaviour
 
     void EndInstructions()
     {
+        LoadingCanvas.gameObject.SetActive(false);
         showingInstructions = false;
         hasSeenInstructions = true; // mark instructions as seen
         if (instructionCanvas != null)
@@ -1390,8 +1523,8 @@ public class GameManager : MonoBehaviour
 
     public async void GetLeaderboard()
     {
-        LoadingCanvas.gameObject.SetActive(true);
-        LoadingCanvas.gameObject.SetActive(true);
+        //LoadingCanvas.gameObject.SetActive(true);
+        //LoadingCanvas.gameObject.SetActive(true);
         float elapsedTime = 0f;
         while (elapsedTime < transitionDuration)
         {
@@ -1578,6 +1711,8 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.Instance.PlayClickSound();
         OptionCanvas.gameObject.SetActive(false);
+        LoadingCanvas.gameObject.SetActive(false);
+        //marketplaceCanvas.gameObject.SetActive(true);
         videoCanvas.gameObject.SetActive(true);
     }
 
@@ -1586,5 +1721,103 @@ public class GameManager : MonoBehaviour
         AudioManager.Instance.PlayClickSound();
         OptionCanvas.gameObject.SetActive(true);
         videoCanvas.gameObject.SetActive(false);
+    }
+
+    //void OnMplaceClicked()
+    //{
+    //    Time.timeScale = 0f;
+    //    //AudioManager.Instance.PlayClickSound();
+    //    Debug.Log("Marketplace Clicked");
+    //    if (marketplaceCanvas == null || resumeMenu == null)
+    //    {
+    //        Debug.LogError("marketplaceCanvas or resumeMenu reference is not set in GameManager!");
+    //        return;
+    //    }
+
+    //    resumeMenu.gameObject.SetActive(false);
+    //    Debug.Log("resume menu disabled");
+    //    marketplaceCanvas.gameObject.SetActive(true);
+    //    Debug.Log("marketplace enabled");
+    //    mainMenuCanvas.gameObject.SetActive(true);
+    //}
+
+    void OnMplaceClicked()
+    {
+        Debug.Log("Marketplace Clicked");
+
+        if (marketplaceCanvas == null || resumeMenu == null)
+        {
+            Debug.LogError("marketplaceCanvas or resumeMenu reference is not set!");
+            return;
+        }
+
+        resumeMenu.gameObject.SetActive(false);
+        //marketplaceCanvas.gameObject.SetActive(true);
+        marketplaceCanvas.gameObject.SetActive(true);
+        Debug.Log($"ResumeMenu activeInHierarchy: {resumeMenu.gameObject.activeInHierarchy}");
+        Debug.Log($"Marketplace activeInHierarchy: {marketplaceCanvas.gameObject.activeInHierarchy}");
+
+
+
+        // Force Unity to immediately refresh the UI even if Time.timeScale = 0
+        Canvas.ForceUpdateCanvases();
+
+        Debug.Log("Marketplace UI forced to update");
+    }
+
+
+    void OnMplaceBack()
+    {
+        AudioManager.Instance.PlayClickSound();
+        resumeMenu.gameObject.SetActive(true);
+        marketplaceCanvas.gameObject.SetActive(false);
+
+        Canvas.ForceUpdateCanvases();
+    }
+
+
+    //void OnCharacterClicked()
+    //{
+    //    characterButton.interactable = false;
+    //    colorsButton.interactable = true;
+    //    myAssetsButton.interactable = true;
+    //    characterPanel.SetActive(true);
+    //    colorsPanel.SetActive(false);
+    //    myAssetsPanel.SetActive(false);
+    //}
+
+    //void OnColorsClicked()
+    //{
+    //    colorsButton.interactable = false;
+    //    characterButton.interactable = true;
+    //    myAssetsButton.interactable = true;
+    //    characterPanel.SetActive(false);
+    //    colorsPanel.SetActive(true);
+    //    myAssetsPanel.SetActive(false);
+    //}
+
+    //void OnMyAssetsClicked()
+    //{
+    //    myAssetsButton.interactable = false;
+    //    characterButton.interactable = true;
+    //    colorsButton.interactable = true;
+    //    characterPanel.SetActive(false);
+    //    colorsPanel.SetActive(false);
+    //    myAssetsPanel.SetActive(true);
+    //}
+
+    public void UseColor(int colorIndex)
+    {
+        if((colorIndex == 0) && (brownEnabled == false))
+        { 
+            brownButton.gameObject.SetActive(true);
+            brownEnabled = true;
+        }
+
+        if((colorIndex == 1)&& (ghostEnabled == false))
+        {
+            ghostButton.gameObject.SetActive(true);
+            ghostEnabled = true;
+        }
     }
 }
