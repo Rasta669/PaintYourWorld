@@ -1,18 +1,19 @@
-using UnityEngine;
-using Thirdweb;
-using System.Threading.Tasks;
-using Thirdweb.Unity;
-using System.Numerics;
-using TMPro;
-using System.Text;
-using System.Collections.Generic;
-using UnityEngine.Networking;
-using UnityEngine.UI;
 using Newtonsoft.Json.Linq;
 using System; // Added for TimeoutException
-using UnityEngine.Events;
+using System.Collections;
+using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
+using System.Text;
+using System.Threading.Tasks;
+using Thirdweb;
+using Thirdweb.Unity;
+using TMPro;
 using UnityEditor;
+using UnityEngine;
+using UnityEngine.Events;
+using UnityEngine.Networking;
+using UnityEngine.UI;
 
 
 
@@ -53,17 +54,35 @@ public class WalletConnectManager : MonoBehaviour
     public string ClaimNftContractAddress { get; set; }
     [field: SerializeField]
     public string ClaimNftAmount { get; set; }
-    [field: SerializeField]
+    //[field: SerializeField]
     public string BuyNftAddress { get; set; }
+    [field: SerializeField]
+    public string BuyNftBrownAddress { get; set; }
+    [field: SerializeField]
+    public string BuyNftGhostAddress { get; set; }
+    [field: SerializeField]
+    public string BuyNftHealthAddress { get; set; }
 
     [field: SerializeField, Header("UI Elements")]
     public GameManager GameManager { get; set; }
     [field: SerializeField]
     public Button ClaimButton { get; set; }
-    [field: SerializeField]
+    //[field: SerializeField]
     public Button BuyButton { get; set; }
-    [field: SerializeField]
+    //[field: SerializeField]
     public Button UseButton { get; set; }
+    [field: SerializeField]
+    public Button BuyButton1 { get; set; }
+    [field: SerializeField]
+    public Button UseButton1 { get; set; }
+    [field: SerializeField]
+    public Button BuyButton2 { get; set; }
+    [field: SerializeField]
+    public Button UseButton2 { get; set; }
+    [field: SerializeField]
+    public Button BuyButtonH { get; set; }
+    [field: SerializeField]
+    public Button UseButtonH { get; set; }
     [field: SerializeField]
     public GameObject ConnectButton { get; set; }
     [field: SerializeField]
@@ -80,10 +99,31 @@ public class WalletConnectManager : MonoBehaviour
     public TextMeshProUGUI CustomTokenBalanceText { get; set; }
     [field: SerializeField]
     public TextMeshProUGUI ClaimedTokenBalanceText { get; set; }
-    [field: SerializeField]
+    //[field: SerializeField]
     public TextMeshProUGUI BuyTokenBalanceText { get; set; }
     [field: SerializeField]
+    public TextMeshProUGUI BuyTokenBalanceText1 { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI BuyTokenBalanceText2 { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI BuyTokenBalanceTextH { get; set; }
+    //[field: SerializeField]
     public TextMeshProUGUI UseTokenText { get; set; }
+    //public TextMeshProUGUI UseTokenBalanceText { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenText1 { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenText2 { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenTextH { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI TokenBalanceText { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenBalanceText1 { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenBalanceText2 { get; set; }
+    [field: SerializeField]
+    public TextMeshProUGUI UseTokenBalanceTextH { get; set; }
 
     [field: SerializeField, Header("NFT Display Canvas")]
     public Canvas NftDisplayCanvas { get; set; }
@@ -91,6 +131,14 @@ public class WalletConnectManager : MonoBehaviour
     public GameObject NftDisplayPrefab { get; set; }
     [field: SerializeField]
     public Transform NftDisplayParent { get; set; }
+
+    [field: SerializeField] 
+    public BigInteger BrownPrice { get; set; } = 100;
+    [field: SerializeField] 
+    public BigInteger GhostPrice { get; set; } = 200;
+
+    private BigInteger colorPrice;
+    
 
     private List<GameObject> instantiatedNfts = new List<GameObject>();
     private float lastFeedbackUpdateTime;
@@ -143,14 +191,13 @@ public class WalletConnectManager : MonoBehaviour
             Destroy(gameObject);
             return;
         }
- thirdwebManager = FindObjectOfType<ThirdwebManager>();
+        thirdwebManager = FindObjectOfType<ThirdwebManager>();
         if (thirdwebManager == null)
         {
             Debug.LogError("ThirdwebManager not found in the scene! Please add the ThirdwebManager prefab.");
         }
         DontDestroyOnLoad(gameObject);
 
-       
 
 
         // Initialize GameManager
@@ -628,11 +675,12 @@ public class WalletConnectManager : MonoBehaviour
         }
     }
 
-    [Obsolete]
-    public async void Buy()
+    //[Obsolete]
+    public async void Buy(int colorIndex)
     {
         try
         {
+            SetColorUIElements(colorIndex);
             if (BuyButton != null) BuyButton.interactable = false;
 
             if (BuyTokenBalanceText != null)
@@ -641,6 +689,8 @@ public class WalletConnectManager : MonoBehaviour
                 BuyTokenBalanceText.text = "Buying...";
             }
 
+            BuyNftAddress = GetColorContractAddress(colorIndex);
+
             if (!string.IsNullOrEmpty(BuyTokenContractAddress))
             {
                 var tokencontract = await ThirdwebManager.Instance.GetContract(BuyTokenContractAddress, ActiveChainId);
@@ -648,11 +698,11 @@ public class WalletConnectManager : MonoBehaviour
                 var tokenBalance = await tokencontract.ERC20_BalanceOf(walletAddress);
                 Debug.Log($"Balance: {tokenBalance} tokens");
                 var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-                if (tokenBalance < 200) {
+                if (tokenBalance < colorPrice) {
                     if (BuyTokenBalanceText != null)
                     {
                         BuyTokenBalanceText.gameObject.SetActive(true);
-                        BuyTokenBalanceText.text = "Need 200 color...";
+                        BuyTokenBalanceText.text = $"Need {colorPrice} color...";
                     }
                 }
                 else
@@ -672,10 +722,11 @@ public class WalletConnectManager : MonoBehaviour
                     if (finalnftBalance == nftBalance)
                     {
                         Debug.LogError($"No NFTs owned by {walletAddress} after claim. Check contract logic or transaction.");
-                        if (ClaimedNFTText != null)
+                        if (BuyTokenBalanceText != null)
                         {
-                            ClaimedNFTText.text = $"No NFTs owned. Tx Hash: {transactionResult.TransactionHash}";
+                            BuyTokenBalanceText.text = $"No NFTs owned. Tx Hash: {transactionResult.TransactionHash}";
                         }
+                        SetNftBalances();
                         return;
                     }
 
@@ -699,7 +750,7 @@ public class WalletConnectManager : MonoBehaviour
                         //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
                         BuyTokenBalanceText.text = $"Claimed!";
                         //ClaimedNft.SetActive(true);
-                        SetNft();
+                        SetNftBalances();
 
                     }
 
@@ -743,18 +794,29 @@ public class WalletConnectManager : MonoBehaviour
         Debug.Log($"Bought");
     }
 
-    [Obsolete]
-    public async void UseColor()
+    //[Obsolete]
+    public async void UseColor(int colorIndex)
     {
         try {
+            SetColorUIElements(colorIndex);
 
             if (UseButton != null) UseButton.interactable = false;
 
             if (UseTokenText != null)
             {
                 UseTokenText.gameObject.SetActive(true);
-                UseTokenText.text = "Buying...";
+                UseTokenText.text = "Preparing to use...";
             }
+            if (colorIndex == 2)
+            {
+                if (GameManager.GetHealth() == 3)
+                {
+                    UseTokenText.text = "Health is full!";
+                    if (UseButton != null) UseButton.interactable = true;
+                    return;
+                }
+            }
+            BuyNftAddress = GetColorContractAddress(colorIndex);
 
             if (!string.IsNullOrEmpty(BuyNftAddress))
             {
@@ -773,11 +835,11 @@ public class WalletConnectManager : MonoBehaviour
                 else
                 {
                     //BigInteger nftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
-                    Debug.Log("Waiting here.");
+                    //Debug.Log("Waiting here.");
 
                     BigInteger tokenId = 0;
                     var ownedNfts = await nftcontract.ERC721_GetOwnedNFTs(walletAddress);
-                    Debug.Log("Passed here.");
+                    //Debug.Log("Passed here.");
                     if (ownedNfts.Count > 0)
                     {
                         tokenId = ownedNfts.Select(nft => BigInteger.Parse(nft.Metadata.Id)).Min();
@@ -804,8 +866,18 @@ public class WalletConnectManager : MonoBehaviour
                         }
                         return;
                     }
-
-                    GameManager.UseColor(0);
+                    if (colorIndex == 2)
+                    {
+                        if (GameManager.GetHealth() < 3)
+                            GameManager.Heal();
+                        else if (GameManager.GetHealth() == 3)
+                        {
+                            UseTokenText.text = "Health is full!";
+                            return;
+                        }
+                    }
+                    else
+                        GameManager.UseColor(colorIndex);
 
                     if (finalnftBalance < 1)
                     {
@@ -820,7 +892,7 @@ public class WalletConnectManager : MonoBehaviour
                             //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
                             UseTokenText.text = $"Now You can use it in the game!";
                             //ClaimedNft.SetActive(true);
-                            //SetNft();
+                            SetNftBalances();
 
                         }
 
@@ -840,6 +912,8 @@ public class WalletConnectManager : MonoBehaviour
                         //GameManager.LevelClaimed();
                         UseButton.interactable = true;
                     }
+
+                    //SetNftBalances();
                 }
                 //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
                 //if (CustomTokenBalanceText != null)
@@ -858,6 +932,133 @@ public class WalletConnectManager : MonoBehaviour
             Debug.LogError($"Failed to use color: {ex.Message}");
             if (UseButton != null) UseButton.interactable = true;
         }
+    }
+
+    private IEnumerator DelaySetBalanceCoroutine()
+    {
+        var delay = 10f; // seconds
+        yield return new WaitForSeconds(delay); // uses Time.timeScale
+        SetNftBalances();
+    }
+    public void SetColorUIElements(int colorIndex)
+    { 
+        if (colorIndex == 0)
+        {
+            //Brown
+            if (UseButton1 != null)
+            {
+                UseButton = UseButton1;
+            }
+
+            if (BuyButton1 != null)
+            {
+                BuyButton = BuyButton1;
+            }
+
+            if(UseTokenText1 != null)
+            {
+                UseTokenText = UseTokenText1;
+            }
+
+            if(BuyTokenBalanceText1 != null)
+            {
+                BuyTokenBalanceText = BuyTokenBalanceText1;
+            }
+            colorPrice = 100;
+        }
+        else if (colorIndex == 1)
+        {
+            //Ghost
+            if (UseButton2 != null)
+            {
+                UseButton = UseButton2;
+            }
+
+            if (BuyButton2 != null)
+            {
+                BuyButton = BuyButton2;
+            }
+
+            if (UseTokenText2 != null)
+            {
+                UseTokenText = UseTokenText2;
+            }
+
+            if (BuyTokenBalanceText2 != null)
+            {
+                BuyTokenBalanceText = BuyTokenBalanceText2;
+            }
+            colorPrice = 200;
+        }
+        else if (colorIndex == 2)
+        {
+            //Ghost
+            if (UseButtonH != null)
+            {
+                UseButton = UseButtonH;
+            }
+
+            if (BuyButtonH != null)
+            {
+                BuyButton = BuyButtonH;
+            }
+
+            if (UseTokenTextH != null)
+            {
+                UseTokenText = UseTokenTextH;
+            }
+
+            if (BuyTokenBalanceTextH != null)
+            {
+                BuyTokenBalanceText = BuyTokenBalanceTextH;
+            }
+            colorPrice = 50;
+        }
+
+    }
+    public string GetColorContractAddress(int colorIndex)
+    {
+        if (colorIndex == 0)
+        {
+            BuyNftAddress = BuyNftBrownAddress;
+        }
+        else if (colorIndex == 1)
+        {
+            BuyNftAddress = BuyNftGhostAddress;
+        }
+        else if (colorIndex == 2)
+        {
+            BuyNftAddress = BuyNftHealthAddress;
+        }
+        return BuyNftAddress;
+    }
+
+    public async void SetNftBalances()
+    {
+        TokenBalanceText.text = $"Loading balances...";
+        var tokens = await ThirdwebManager.Instance.GetContract(TokenContractAddress, ActiveChainId);
+        var tokenBalance = await tokens.ERC20_BalanceOf(walletAddress);
+        var decimals = 2;
+        var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+        TokenBalanceText.text = $"Owned: {tokenBalanceFormatted}";
+
+        UseTokenBalanceText1.text = $"Loading balances...";
+        var brownnft = await ThirdwebManager.Instance.GetContract(BuyNftBrownAddress, ActiveChainId);
+        var brownnftBalance = await brownnft.ERC721_BalanceOf(walletAddress);
+        UseTokenBalanceText1.text = $"Owned: {brownnftBalance}";
+
+        UseTokenBalanceText2.text = $"Loading balances...";
+        var ghostnft = await ThirdwebManager.Instance.GetContract(BuyNftGhostAddress, ActiveChainId);
+        var ghostnftBalance = await ghostnft.ERC721_BalanceOf(walletAddress);
+        UseTokenBalanceText2.text = $"Owned: {ghostnftBalance}";
+
+        UseTokenBalanceTextH.text = $"Loading balances...";
+        var health = await ThirdwebManager.Instance.GetContract(BuyNftHealthAddress, ActiveChainId);
+        var healthnftBalance = await health.ERC721_BalanceOf(walletAddress);
+        UseTokenBalanceTextH.text = $"Owned: {healthnftBalance}";
+
+        
+
     }
     public async void ConnectWithEcosystem()
     {

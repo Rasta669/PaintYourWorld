@@ -1148,8 +1148,10 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         pauseMenu.gameObject.SetActive(false);
         resumeMenu.gameObject.SetActive(true);
+        
         UpdateXPText(); // Update XP display when pausing
         //UpdatePauseMenuWalletInfo(); // Update wallet and token info in pause menu
+        walletConnectManager.SetNftBalances(); // Ensure wallet connection is up to date
     }
 
     void OnResumeButtonClicked()
@@ -1636,7 +1638,6 @@ public class GameManager : MonoBehaviour
         mainMenuCanvas.gameObject.SetActive(false);
         HTPCanvas.gameObject.SetActive(true);
     }
-
     public void UpdatePlayerHealth(int health)
     {
         if (heartImages != null && heartImages.Count >= 3)
@@ -1654,6 +1655,20 @@ public class GameManager : MonoBehaviour
         if (player != null)
         {
             player.ResetHealth();
+        }
+    }
+
+    public int GetHealth()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        return player != null ? player.GetHealth() : 999;
+    }
+    public void Heal()
+    {
+        PlayerController player = FindObjectOfType<PlayerController>();
+        if (player != null)
+        {
+            player.Heal(1);
         }
     }
 

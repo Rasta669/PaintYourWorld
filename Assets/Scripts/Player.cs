@@ -503,6 +503,12 @@ public class PlayerController : MonoBehaviour
         UpdateHealthUI();
     }
 
+    public void Heal(int amount)
+    {
+        if (isDead) return;
+        currentHealth = Mathf.Min(maxHealth, currentHealth + amount);
+        UpdateHealthUI();
+    }
     public int GetHealth()
     {
 
