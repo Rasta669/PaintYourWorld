@@ -81,6 +81,8 @@ public class GameManager : MonoBehaviour
     private int totalXP = 0;        // Total XP earned
     private int obstacleBonus = 10; // XP bonus per obstacle passed
     private WalletConnectManager walletConnectManager; // Reference to WalletConnectManager
+    private float initialGhostTime = 0f;
+    [SerializeField] private float GhostCountdown = 10f;  // New: Marketplace canvas
 
     // Instruction UI fields
     public Canvas instructionCanvas;    // Reference to instruction canvas
@@ -104,6 +106,7 @@ public class GameManager : MonoBehaviour
     private bool hasSeenInstructions = false;               // Ensures instructions shown only once
     private bool brownEnabled = false;
     private bool ghostEnabled = false;
+    private bool ghostClicked = false;
 
     // Camera follow settings
     public float smoothSpeed = 0.125f; // How smooth the camera follows (lower = smoother but slower)
@@ -378,6 +381,12 @@ public class GameManager : MonoBehaviour
         {
             mplaceButton.onClick.AddListener(OnMplaceClicked);
         }
+
+        if (mplaceButtonIcon != null)
+        {
+            mplaceButtonIcon.onClick.AddListener(OnMplaceIconClicked);
+        }
+
         if (mplaceBackButton != null)
         {
             mplaceBackButton.onClick.AddListener(OnMplaceBack);
@@ -464,6 +473,21 @@ public class GameManager : MonoBehaviour
         if (isGameStarted && player != null && main != null)
         {
             FollowPlayer();
+        }
+
+        if (ghostClicked)
+        {
+            if (Time.time - initialGhostTime >= GhostCountdown)
+            {
+                Debug.Log("Ghost color duration ended, reverting to purple.");
+                ghostEnabled = false;
+                if (ghostButton != null)
+                {
+                    ghostButton.gameObject.SetActive(false);
+                }
+                SetPaintColor("purple");
+                ghostClicked = false;
+            }
         }
        
     }
@@ -1194,6 +1218,13 @@ public class GameManager : MonoBehaviour
         if (paintManager != null)
         {
             paintManager.SetPaintColor(colorName);
+            if (colorName == "ghost")
+            {
+                initialGhostTime = Time.time; // Reset ghost timer on color change
+                ghostClicked = true;
+                Debug.Log("Ghost color activated, timer reset.");
+            }
+            
         }
         else
         {
@@ -1769,6 +1800,7 @@ public class GameManager : MonoBehaviour
         resumeMenu.gameObject.SetActive(false);
         //marketplaceCanvas.gameObject.SetActive(true);
         marketplaceCanvas.gameObject.SetActive(true);
+        walletConnectManager.DisableMessageText(); // Hide any previous messages
         Debug.Log($"ResumeMenu activeInHierarchy: {resumeMenu.gameObject.activeInHierarchy}");
         Debug.Log($"Marketplace activeInHierarchy: {marketplaceCanvas.gameObject.activeInHierarchy}");
 
@@ -1776,6 +1808,7 @@ public class GameManager : MonoBehaviour
 
         // Force Unity to immediately refresh the UI even if Time.timeScale = 0
         Canvas.ForceUpdateCanvases();
+        
 
         Debug.Log("Marketplace UI forced to update");
     }
@@ -1784,10 +1817,43 @@ public class GameManager : MonoBehaviour
     void OnMplaceBack()
     {
         AudioManager.Instance.PlayClickSound();
-        resumeMenu.gameObject.SetActive(true);
+        if (isGameStarted)
+        {
+            resumeMenu.gameObject.SetActive(true);
+        }
+        else 
+        {                         
+            mainMenuCanvas.gameObject.SetActive(true);
+        }
         marketplaceCanvas.gameObject.SetActive(false);
 
         Canvas.ForceUpdateCanvases();
+    }
+
+    void OnMplaceIconClicked()
+    {
+        Debug.Log("Marketplace Clicked");
+
+        if (marketplaceCanvas == null || mainMenuCanvas == null)
+        {
+            Debug.LogError("marketplaceCanvas or resumeMenu reference is not set!");
+            return;
+        }
+
+        mainMenuCanvas.gameObject.SetActive(false);
+        //marketplaceCanvas.gameObject.SetActive(true);
+        marketplaceCanvas.gameObject.SetActive(true);
+        walletConnectManager.SetNftBalances(); // Ensure wallet connection is up to date
+        walletConnectManager.DisableMessageText(); // Hide any previous messages
+        //Debug.Log($"ResumeMenu activeInHierarchy: {resumeMenu.gameObject.activeInHierarchy}");
+        //Debug.Log($"Marketplace activeInHierarchy: {marketplaceCanvas.gameObject.activeInHierarchy}");
+
+
+
+        // Force Unity to immediately refresh the UI even if Time.timeScale = 0
+        Canvas.ForceUpdateCanvases();
+
+        Debug.Log("Marketplace UI forced to update");
     }
 
 
@@ -1831,8 +1897,25 @@ public class GameManager : MonoBehaviour
 
         if((colorIndex == 1)&& (ghostEnabled == false))
         {
+            //initialGhostTime = Time.time; // Reset ghost timer on first enable
             ghostButton.gameObject.SetActive(true);
             ghostEnabled = true;
+        }
+    }
+
+    public bool isColourActive(int colorIndex)
+    {
+        if(colorIndex == 0)
+        {
+            return brownEnabled;
+        }
+        else if(colorIndex == 1)
+        {
+            return ghostEnabled;
+        }
+        else
+        {
+            return false;
         }
     }
 }

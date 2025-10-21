@@ -3694,6 +3694,18 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 707937803}
+    - target: {fileID: 3369099301385922904, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_Camera
+      value: 
+      objectReference: {fileID: 519420031}
+    - target: {fileID: 3369099301385922904, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_RenderMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3369099301385922904, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_UpdateRectTransformForStandalone
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3876594141621899165, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 

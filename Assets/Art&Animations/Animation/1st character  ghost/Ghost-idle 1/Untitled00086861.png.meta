@@ -116,12 +116,12 @@ TextureImporter:
       name: Untitled00086861_0
       rect:
         serializedVersion: 2
-        x: 283
+        x: 275
         y: 213
-        width: 121
-        height: 283
+        width: 158
+        height: 285
       alignment: 0
-      pivot: {x: 0, y: 0}
+      pivot: {x: 0.5, y: 0.5}
       border: {x: 0, y: 0, z: 0, w: 0}
       customData: 
       outline: []
@@ -138,7 +138,7 @@ TextureImporter:
     customData: 
     physicsShape: []
     bones: []
-    spriteID: 
+    spriteID: 9b294aee41917234b87f84e485787f1f
     internalID: 0
     vertices: []
     indices: 

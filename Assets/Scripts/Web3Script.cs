@@ -816,10 +816,19 @@ public class WalletConnectManager : MonoBehaviour
                     return;
                 }
             }
+
+            if (GameManager.isColourActive(colorIndex))
+            {
+                UseTokenText.text = "Color already active, use it first!";
+                if (UseButton != null) UseButton.interactable = true;
+                return;
+            }
+
             BuyNftAddress = GetColorContractAddress(colorIndex);
 
             if (!string.IsNullOrEmpty(BuyNftAddress))
             {
+                
                 var nftcontract = await ThirdwebManager.Instance.GetContract(BuyNftAddress, ActiveChainId);
                 var initialnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
                 Debug.Log($"Balance: {initialnftBalance} tokens");
@@ -852,6 +861,7 @@ public class WalletConnectManager : MonoBehaviour
 
                     Debug.Log($"Smallest Token ID: {tokenId}");
                     //Debug.Log($"Balance: {nftBalance} NFTs");
+                    UseTokenText.text = "All checks passed, almost there!";
                     var transactionResult = await nftcontract.DropER721_Burn(wallet, tokenId);
                     Debug.Log($"NFTs burned successfully! Transaction Hash: {transactionResult.TransactionHash}");
                     var finalnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
@@ -877,7 +887,10 @@ public class WalletConnectManager : MonoBehaviour
                         }
                     }
                     else
+                    {
                         GameManager.UseColor(colorIndex);
+                    }
+                        
 
                     if (finalnftBalance < 1)
                     {
@@ -913,7 +926,7 @@ public class WalletConnectManager : MonoBehaviour
                         UseButton.interactable = true;
                     }
 
-                    //SetNftBalances();
+                    SetNftBalances();
                 }
                 //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
                 //if (CustomTokenBalanceText != null)
@@ -930,6 +943,7 @@ public class WalletConnectManager : MonoBehaviour
         catch (System.Exception ex)
         {
             Debug.LogError($"Failed to use color: {ex.Message}");
+            SetNftBalances();
             if (UseButton != null) UseButton.interactable = true;
         }
     }
@@ -939,6 +953,38 @@ public class WalletConnectManager : MonoBehaviour
         var delay = 10f; // seconds
         yield return new WaitForSeconds(delay); // uses Time.timeScale
         SetNftBalances();
+    }
+
+    public void DisableMessageText()
+    {
+
+        if (UseTokenText1 != null)
+        {
+            UseTokenText1.gameObject.SetActive(false);
+        }
+        if (BuyTokenBalanceText1 != null)
+        {
+            BuyTokenBalanceText1.gameObject.SetActive(false);
+        }
+
+        if (UseTokenText2 != null)
+        {
+            UseTokenText2.gameObject.SetActive(false);
+        }
+        if (BuyTokenBalanceText2 != null)
+        {
+            BuyTokenBalanceText2.gameObject.SetActive(false);
+        }
+
+        if (UseTokenTextH != null)
+        {
+            UseTokenTextH.gameObject.SetActive(false);
+        }
+        if (BuyTokenBalanceTextH != null)
+        {
+            BuyTokenBalanceTextH.gameObject.SetActive(false);
+        }
+      
     }
     public void SetColorUIElements(int colorIndex)
     { 

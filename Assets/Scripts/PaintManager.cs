@@ -288,8 +288,10 @@ public class PaintManager : MonoBehaviour
         shouldDestroy.Dispose();
     }
 
-
-
+    public void SetSelectedColor(String color)
+    {
+        selectedColor = color;
+    }
     public GameObject ApplyPaint(Vector3 position)
     {
         GameObject newPlatform = Instantiate(platformPrefab, position, Quaternion.identity, platformsParent);
