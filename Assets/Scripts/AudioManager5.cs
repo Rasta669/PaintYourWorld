@@ -24,11 +24,13 @@ public class AudioManager : MonoBehaviour
     public AudioSource jumpSound;
     public AudioSource dieSound;
     public AudioSource keyAcquiredSound;
+    public AudioSource shortSuccessSound;
     public AudioSource enemyWalkSound;
     public AudioSource enemyRunSound;
     public AudioSource clickSound;
     public AudioSource waterSound;
     public AudioSource climbSound;
+    public AudioSource TickSound;
 
 
     private void Awake()
@@ -58,7 +60,7 @@ public class AudioManager : MonoBehaviour
             dB = Mathf.Lerp(-30f, 10f, value); // you can adjust range here
 
         audioMixer.SetFloat("Music", dB);
-        Debug.Log($"🎵 Music Volume: Slider={value}, dB={dB}");
+        //Debug.Log($"🎵 Music Volume: Slider={value}, dB={dB}");
     }
 
     public void SetEffectsVolume(float value)
@@ -71,7 +73,7 @@ public class AudioManager : MonoBehaviour
             dB = Mathf.Lerp(-30f, 10f, value); // same loudness curve
 
         audioMixer.SetFloat("Effects", dB);
-        Debug.Log($"💥 Effects Volume: Slider={value}, dB={dB}");
+        //Debug.Log($"💥 Effects Volume: Slider={value}, dB={dB}");
     }
 
 
@@ -119,10 +121,12 @@ public class AudioManager : MonoBehaviour
     public void PlayJumpSound() => PlaySound(jumpSound);
     public void PlayDieSound() => PlaySound(dieSound);
     public void PlayKeyAcquiredSound() => PlaySound(keyAcquiredSound);
+    public void PlayShortSuccessSound() => PlaySound(shortSuccessSound);
     public void PlayEnemyWalkSound() => PlaySound(enemyWalkSound);
     public void PlayEnemyRunSound() => PlaySound(enemyRunSound);
     public void PlayClimbSound() => PlaySound(climbSound);
     public void PlayClickSound() => PlaySound(clickSound);
+    public void PlayTickSound() => PlaySound(TickSound);
     public void PlayWaterSound() => PlaySound(waterSound);
 
     private void PlaySound(AudioSource sound)

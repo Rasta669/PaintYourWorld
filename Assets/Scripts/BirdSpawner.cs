@@ -235,7 +235,7 @@ public class BirdSpawner : MonoBehaviour
             {
                 birdPassed[bird] = true;
                 gameManager?.AddObstacleBonus();
-                Debug.Log($"✅ Player passed bird {bird.name} — bonus awarded!");
+                //Debug.Log($"✅ Player passed bird {bird.name} — bonus awarded!");
             }
             //Debug.Log($"Player X: {score.transform.position.x}, Bird X: {bird.transform.position.x}");
 

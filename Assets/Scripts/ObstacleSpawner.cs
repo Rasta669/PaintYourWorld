@@ -420,7 +420,7 @@ public class ObstacleSpawner : MonoBehaviour
             obstacle.SetActive(false);
             obstaclePool.Enqueue(obstacle);
         }
-        Debug.Log($"Obstacle pool initialized with {poolSize} obstacles.");
+        //Debug.Log($"Obstacle pool initialized with {poolSize} obstacles.");
     }
 
     private GameObject GetObstacleFromPool(Vector3 position, Quaternion rotation)
@@ -522,7 +522,7 @@ public class ObstacleSpawner : MonoBehaviour
             return;
         }
 
-        Debug.Log($"ObstacleSpawner: Player set to {player.name}");
+        //Debug.Log($"ObstacleSpawner: Player set to {player.name}");
     }
 
     MovementType GetRandomMovementType()

@@ -136,7 +136,7 @@ public class PaintManager : MonoBehaviour
             platform.SetActive(false);
             platformPool.Enqueue(platform);
         }
-        Debug.Log($"Object pool initialized with {poolSize} platforms.");
+        //Debug.Log($"Object pool initialized with {poolSize} platforms.");
     }
 
     private GameObject GetPlatformFromPool()
@@ -177,7 +177,7 @@ public class PaintManager : MonoBehaviour
             Debug.LogWarning("Player did not have an Animator; one was added automatically.");
         }
 
-        Debug.Log($"Player set to {player.name}");
+        //Debug.Log($"Player set to {player.name}");
     }
 
     private void Update()
@@ -318,7 +318,7 @@ public class PaintManager : MonoBehaviour
             newAlphas = new NativeArray<float>(arrayCapacity, Allocator.TempJob);
             shouldDestroy = new NativeArray<bool>(arrayCapacity, Allocator.TempJob);
             positionsX = new NativeArray<float>(arrayCapacity, Allocator.TempJob);
-            Debug.Log($"Resized NativeArrays to capacity {arrayCapacity}");
+            //Debug.Log($"Resized NativeArrays to capacity {arrayCapacity}");
         }
 
         // Populate job data
@@ -507,7 +507,7 @@ public class PaintManager : MonoBehaviour
         if (colorProperties.ContainsKey(colorName))
         {
             selectedColor = colorName;
-            Debug.Log($"Paint color changed to {colorName}");
+            //Debug.Log($"Paint color changed to {colorName}");
             return true;
         }
         Debug.LogWarning($"Invalid paint color: {colorName}");
@@ -530,7 +530,7 @@ public class PaintManager : MonoBehaviour
             }
         }
         activeBrushStrokes.Clear();
-        Debug.Log("All paint cleared from the world");
+        //Debug.Log("All paint cleared from the world");
     }
 }
 

@@ -133,11 +133,11 @@ public class WalletConnectManager : MonoBehaviour
     public Transform NftDisplayParent { get; set; }
 
     [field: SerializeField] 
-    public BigInteger BrownPrice { get; set; } = 100;
+    public BigInteger BrownPrice { get; set; } = 2500;
     [field: SerializeField] 
-    public BigInteger GhostPrice { get; set; } = 200;
+    public BigInteger GhostPrice { get; set; } = 2500;
 
-    private BigInteger colorPrice = 50;
+    private BigInteger colorPrice = 500;
     
 
     private List<GameObject> instantiatedNfts = new List<GameObject>();
@@ -153,6 +153,7 @@ public class WalletConnectManager : MonoBehaviour
     // Fields with corrected ScrollRect type
     [field: SerializeField, Header("Leaderboard Contract")]
     public string LeaderboardContractAddress { get; set; }
+    private AudioManager audioManager;
 
     private List<uint> scoreList = new List<uint>();
     private List<string> nameList = new List<string>();
@@ -207,6 +208,15 @@ public class WalletConnectManager : MonoBehaviour
             if (GameManager == null)
             {
                 Debug.LogError("GameManager not found in the scene!.");
+            }
+        }
+
+        if (audioManager == null)
+        {
+            audioManager = AudioManager.Instance;
+            if (audioManager == null)
+            {
+                Debug.LogError("AudioManager not found in the scene!.");
             }
         }
 
@@ -623,8 +633,8 @@ public class WalletConnectManager : MonoBehaviour
         try
         {
             if (ClaimButton != null) ClaimButton.interactable = false;
-            Debug.Log(wallet);
-            Debug.Log(walletAddress);
+            //Debug.Log(wallet);
+            //Debug.Log(walletAddress);
 
             if (ClaimedTokenBalanceText != null)
             {
@@ -638,7 +648,7 @@ public class WalletConnectManager : MonoBehaviour
             var contract = await ThirdwebManager.Instance.GetContract(ClaimTokenContractAddress, ActiveChainId);
             var decimals = 2;
             string claimAmountInWei = Utils.ToWei(tokenAmount.ToString());
-            Debug.Log($"Claiming {tokenAmount} tokens ({claimAmountInWei} wei) based on {totalXP} XP");
+            //Debug.Log($"Claiming {tokenAmount} tokens ({claimAmountInWei} wei) based on {totalXP} XP");
 
             //if (wallet is WalletConnectWallet walletConnect)
             //{
@@ -651,12 +661,14 @@ public class WalletConnectManager : MonoBehaviour
 
             //var transactionResult = await contract.Write(wallet, "claim", 0, ClaimTokenAmount);
 
-            Debug.Log($"Tokens claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
+            //Debug.Log($"Tokens claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
             //await Task.Delay(5000);
 
             var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
             var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-            Debug.Log($"Updated token balance for {walletAddress}: {tokenBalanceFormatted}");
+            if (audioManager != null)
+                audioManager.PlayShortSuccessSound();
+            //Debug.Log($"Updated token balance for {walletAddress}: {tokenBalanceFormatted}");
             if (ClaimedTokenBalanceText != null)
             {
                 ClaimedTokenBalanceText.text = $"Claimed: {totalXP} Color";
@@ -695,11 +707,11 @@ public class WalletConnectManager : MonoBehaviour
             {
                 colorPrice = GetColorPrice(colorIndex);
                 var colorPriceWei = colorPrice * BigInteger.Pow(10, 18); //Assuming 2 decimals for token
-                Debug.Log($"Color price in wei: {colorPrice}");
+                //Debug.Log($"Color price in wei: {colorPrice}");
                 var tokencontract = await ThirdwebManager.Instance.GetContract(BuyTokenContractAddress, ActiveChainId);
                 var decimals = 0;
                 var tokenBalance = await tokencontract.ERC20_BalanceOf(walletAddress);
-                Debug.Log($"Balance: {tokenBalance} tokens");
+                //Debug.Log($"Balance: {tokenBalance} tokens");
                 var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
                 if (tokenBalance < colorPriceWei) {
                     if (BuyTokenBalanceText != null)
@@ -716,17 +728,22 @@ public class WalletConnectManager : MonoBehaviour
                 else
                 {                    
                     var nftcontract = await ThirdwebManager.Instance.GetContract(BuyNftAddress, ActiveChainId);
-                    Debug.Log("Approving token spend...");
+                    //Debug.Log("Approving token spend...");
                     await tokencontract.ERC20_Approve(wallet, BuyNftAddress, tokenBalance);
-                    Debug.Log("Token spend approved.");
+                    //Debug.Log("Token spend approved.");
+                    if (BuyTokenBalanceText != null)
+                    {
+                        BuyTokenBalanceText.gameObject.SetActive(true);
+                        BuyTokenBalanceText.text = "Almost there...";
+                    }
                     BigInteger nftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
                     //Debug.Log("Waiting here.
 
-                    Debug.Log($"Balance: {nftBalance} NFTs");
+                    //Debug.Log($"Balance: {nftBalance} NFTs");
                     var transactionResult = await nftcontract.DropERC721_Claim(wallet, walletAddress, 1);
-                    Debug.Log($"NFTs claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
+                    //Debug.Log($"NFTs claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
                     var finalnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
-                    Debug.Log($"Balance: {finalnftBalance} NFTs");
+                    //Debug.Log($"Balance: {finalnftBalance} NFTs");
                     if (finalnftBalance == nftBalance)
                     {
                         Debug.LogError($"No NFTs owned by {walletAddress} after claim. Check contract logic or transaction.");
@@ -755,6 +772,8 @@ public class WalletConnectManager : MonoBehaviour
 
                     if (BuyTokenBalanceText != null)
                     {
+                        if (audioManager != null)
+                            audioManager.PlayShortSuccessSound();
                         //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
                         BuyTokenBalanceText.text = $"Claimed!";
                         //ClaimedNft.SetActive(true);
@@ -799,7 +818,7 @@ public class WalletConnectManager : MonoBehaviour
         //}
 
         
-        Debug.Log($"Bought");
+        //Debug.Log($"Bought");
     }
 
     //[Obsolete]
@@ -839,7 +858,7 @@ public class WalletConnectManager : MonoBehaviour
                 
                 var nftcontract = await ThirdwebManager.Instance.GetContract(BuyNftAddress, ActiveChainId);
                 var initialnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
-                Debug.Log($"Balance: {initialnftBalance} tokens");
+                //Debug.Log($"Balance: {initialnftBalance} tokens");
                
                 if (initialnftBalance < 1)
                 {
@@ -860,20 +879,20 @@ public class WalletConnectManager : MonoBehaviour
                     if (ownedNfts.Count > 0)
                     {
                         tokenId = ownedNfts.Select(nft => BigInteger.Parse(nft.Metadata.Id)).Min();
-                        Debug.Log($"Small tokenId:{tokenId}");
+                        //Debug.Log($"Small tokenId:{tokenId}");
                     }
                     else
                     {
                         UseTokenText.text = "No sprays buy more in store...";
                     }
 
-                    Debug.Log($"Smallest Token ID: {tokenId}");
+                    //Debug.Log($"Smallest Token ID: {tokenId}");
                     //Debug.Log($"Balance: {nftBalance} NFTs");
                     UseTokenText.text = "All checks passed, almost there!";
                     var transactionResult = await nftcontract.DropER721_Burn(wallet, tokenId);
-                    Debug.Log($"NFTs burned successfully! Transaction Hash: {transactionResult.TransactionHash}");
+                    //Debug.Log($"NFTs burned successfully! Transaction Hash: {transactionResult.TransactionHash}");
                     var finalnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
-                    Debug.Log($"Balance: {finalnftBalance} NFTs");
+                    //Debug.Log($"Balance: {finalnftBalance} NFTs");
 
                     if (finalnftBalance == initialnftBalance)
                     {
@@ -963,6 +982,20 @@ public class WalletConnectManager : MonoBehaviour
         SetNftBalances();
     }
 
+    public async void GetLiveTokenBalance()
+    {
+        //Debug.Log($"Color price in wei: {colorPrice}");
+        var tokencontract = await ThirdwebManager.Instance.GetContract(BuyTokenContractAddress, ActiveChainId);
+        var decimals = 0;
+        var tokenBalance = await tokencontract.ERC20_BalanceOf(walletAddress);
+        var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
+        //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+        if (CustomTokenBalanceText != null)
+        {
+            CustomTokenBalanceText.gameObject.SetActive(true);
+            CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
+        }
+    }
     public void DisableMessageText()
     {
 
@@ -998,7 +1031,7 @@ public class WalletConnectManager : MonoBehaviour
     { 
         if (colorIndex == 0)
         {
-            colorPrice = 100;
+            colorPrice = 2500;
             //Brown
             if (UseButton1 != null)
             {
@@ -1024,7 +1057,7 @@ public class WalletConnectManager : MonoBehaviour
         else if (colorIndex == 1)
         {
             //Ghost
-            colorPrice = 200;
+            colorPrice = 2500;
 
             if (UseButton2 != null)
             {
@@ -1050,7 +1083,7 @@ public class WalletConnectManager : MonoBehaviour
         else if (colorIndex == 2)
         {
             //health
-            colorPrice = 50;
+            colorPrice = 500;
             if (UseButtonH != null)
             {
                 UseButton = UseButtonH;
@@ -1072,7 +1105,7 @@ public class WalletConnectManager : MonoBehaviour
             }
             
         }
-         Debug.Log($"Set UI elements for color index {colorIndex}");
+         //Debug.Log($"Set UI elements for color index {colorIndex}");
     }
 
     public BigInteger GetColorPrice(int colorIndex)
@@ -1080,17 +1113,17 @@ public class WalletConnectManager : MonoBehaviour
         BigInteger price = 0;
         if (colorIndex == 0)
         {
-            price = 100;
+            price = 2500;
         }
         else if (colorIndex == 1)
         {
-            price = 200;
+            price = 2500;
         }
         else if (colorIndex == 2)
         {
-            price = 50;
+            price = 500;
         }
-        Debug.Log($"Color index {colorIndex} has price {price}");
+        //Debug.Log($"Color index {colorIndex} has price {price}");
         return price;
     }
     public string GetColorContractAddress(int colorIndex)
@@ -1178,11 +1211,11 @@ public class WalletConnectManager : MonoBehaviour
             Debug.Log("Initiating ecosystem wallet connection...");
             wallet = await ThirdwebManager.Instance.ConnectWallet(options);
             walletAddress = await wallet.GetAddress();
-            Debug.Log($"Wallet connected successfully! Address: {walletAddress}");
+            //Debug.Log($"Wallet connected successfully! Address: {walletAddress}");
 
             var balance = await wallet.GetBalance(chainId: ActiveChainId);
             var balanceEth = Utils.ToEth(wei: balance.ToString(), decimalsToDisplay: 2, addCommas: true);
-            Debug.Log($"Wallet balance: {balanceEth}");
+            //Debug.Log($"Wallet balance: {balanceEth}");
             if (EthBalanceText != null)
             {
                 EthBalanceText.gameObject.SetActive(true);
@@ -1195,7 +1228,7 @@ public class WalletConnectManager : MonoBehaviour
                 var decimals = 2;
                 var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
                 var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-                Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+                //Debug.Log($"Custom token balance for {walletAddress}: {tokenBalanceFormatted}");
                 if (CustomTokenBalanceText != null)
                 {
                     CustomTokenBalanceText.gameObject.SetActive(true);
@@ -1300,7 +1333,7 @@ public class WalletConnectManager : MonoBehaviour
                 provider = AuthProvider.Farcaster;
                 break;
         }
-        Debug.Log($"Wallet provider: {authProvider}");
+        //Debug.Log($"Wallet provider: {authProvider}");
         // Initialize client with clientId (not secretKey)
         //var client = ThirdwebClient.Create(clientId: "your_client_id");
 
@@ -1311,11 +1344,11 @@ public class WalletConnectManager : MonoBehaviour
             inAppWalletOptions: new InAppWalletOptions(authprovider: provider),
             smartWalletOptions: new SmartWalletOptions(sponsorGas: true)
         );
-        Debug.Log($"Wallet chainid: {ActiveChainId}");
+        //Debug.Log($"Wallet chainid: {ActiveChainId}");
         wallet = await ThirdwebManager.Instance.ConnectWallet(connection);
         walletAddress = await wallet.GetAddress();
-        Debug.Log($"Wallet: {wallet}");
-        Debug.Log($"Wallet add: {walletAddress}");
+        //Debug.Log($"Wallet: {wallet}");
+        //Debug.Log($"Wallet add: {walletAddress}");
         OnLoggedIn?.Invoke(walletAddress);
 
         var balance = await wallet.GetBalance(chainId: ActiveChainId);
@@ -1340,9 +1373,9 @@ public class WalletConnectManager : MonoBehaviour
                 CustomTokenBalanceText.text = $"{TokenName}: {tokenBalanceFormatted}";
             }
         }
+        if (audioManager != null)
+            audioManager.PlayShortSuccessSound();
 
-        
-        
         if (ConnectedText != null)
         {
             ConnectedText.text = "Connected";
@@ -1382,7 +1415,7 @@ public class WalletConnectManager : MonoBehaviour
 
         wallet = await ThirdwebManager.Instance.ConnectWallet(walletOptions);
         walletAddress = await wallet.GetAddress();
-        Debug.Log($"Wallet: {wallet}");
+        //Debug.Log($"Wallet: {wallet}");
         OnLoggedIn?.Invoke(walletAddress);
 
         var balance = await wallet.GetBalance(chainId: ActiveChainId);
@@ -1408,7 +1441,8 @@ public class WalletConnectManager : MonoBehaviour
             }
         }
 
-
+        if (audioManager != null)
+            audioManager.PlayShortSuccessSound();
 
         if (ConnectedText != null)
         {
@@ -1449,7 +1483,7 @@ public class WalletConnectManager : MonoBehaviour
             var contract = await ThirdwebManager.Instance.GetContract(TokenContractAddress, ActiveChainId);
             var tokenBalance = await contract.ERC20_BalanceOf(walletAddress);
             var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), 2, addCommas: true);
-            Debug.Log($"Fetched live custom token balance for {walletAddress}: {tokenBalanceFormatted}");
+            //Debug.Log($"Fetched live custom token balance for {walletAddress}: {tokenBalanceFormatted}");
             if (CustomTokenBalanceText != null)
             {
                 CustomTokenBalanceText.gameObject.SetActive(true);
@@ -1501,7 +1535,7 @@ public class WalletConnectManager : MonoBehaviour
 
         try
         {
-            Debug.Log("fetching...");
+            //Debug.Log("fetching...");
             // Get the contract instance
             var contract = await ThirdwebManager.Instance.GetContract(
                 LeaderboardContractAddress,

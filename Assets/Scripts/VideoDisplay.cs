@@ -17,7 +17,7 @@ public class VideoDisplay : MonoBehaviour
         if (vplayer != null)
         {
             string vpath = System.IO.Path.Combine(Application.streamingAssetsPath, videoFileName);
-            Debug.Log(vpath);
+            //Debug.Log(vpath);
             vplayer.url = vpath;
             vplayer.Play();
         }

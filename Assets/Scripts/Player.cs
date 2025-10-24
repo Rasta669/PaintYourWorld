@@ -772,7 +772,7 @@ public class PlayerController : MonoBehaviour
     {
         isGhostMode = true;
         ghostModeEndTime = Time.time + duration;
-        Debug.Log("👻 Ghost mode activated!");
+        //Debug.Log("👻 Ghost mode activated!");
 
         if (spriteRenderer != null)
         {
@@ -780,7 +780,12 @@ public class PlayerController : MonoBehaviour
             c.a = 0.5f;
             spriteRenderer.color = c;
         }
-
+        if (!AudioManager.Instance.TickSound.isPlaying)
+        {
+            //Debug.Log("Playing TickSound in loop.");
+            AudioManager.Instance.TickSound.loop = true; // Enable looping
+            AudioManager.Instance.PlayTickSound();
+        }
         Collider2D playerCollider = GetComponent<Collider2D>();
         List<Collider2D> obstacleColliders = new List<Collider2D>();
         if (obstacleSpawner != null && playerCollider != null)
@@ -822,10 +827,16 @@ public class PlayerController : MonoBehaviour
             c.a = 1f;
             spriteRenderer.color = c;
         }
-
+        // Stop the TickSound when ghost duration ends
+        if (AudioManager.Instance != null )
+        {
+            AudioManager.Instance.TickSound.loop = false; // Disable looping
+            AudioManager.Instance.TickSound.Stop(); // Stop the sound
+        }
+        
         isGhostMode = false;
         ghostRoutine = null;
-        Debug.Log("👻 Ghost mode ended!");
+        //Debug.Log("👻 Ghost mode ended!");
     }
 
     private IEnumerator ResetSpeedAfterDelay(float delay)

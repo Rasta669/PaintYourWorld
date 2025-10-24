@@ -26,6 +26,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas audioCanvas;
     [SerializeField] private Canvas IntroCanvas;
     [SerializeField] private Canvas CTSCanvas;
+    [SerializeField] private Canvas CreditsCanvas;
+
     //[SerializeField] private GameObject characterPanel;
     //[SerializeField] private GameObject colorsPanel;
     //[SerializeField] private GameObject myAssetsPanel;
@@ -50,6 +52,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button leaderboardBackButton;           
     [SerializeField] private Button InstructionsButton;           
     [SerializeField] private Button InstructionsBackButton;           
+    [SerializeField] private Button CreditsButton;           
+    [SerializeField] private Button CreditsBackButton;           
     //[SerializeField] private Button characterButton;           // Reference to your back to resume menu button
     //[SerializeField] private Button myAssetsButton;           // Reference to your back to resume menu button
     //[SerializeField] private Button colorsButton;           // Reference to your back to resume menu button
@@ -117,7 +121,7 @@ public class GameManager : MonoBehaviour
     private bool ghostClicked = false;
     private Coroutine introCoroutine;
     private bool hasUserClicked = false;
-
+    private string ColorBalance;
     // Camera follow settings
     public float smoothSpeed = 0.125f; // How smooth the camera follows (lower = smoother but slower)
     public Vector3 cameraOffset = new Vector3(0f, 0f, -10f); // Offset from player (Z=-10 for 2D)
@@ -242,6 +246,8 @@ public class GameManager : MonoBehaviour
                 audioCanvas.gameObject.SetActive(false);
                 videoCanvas.gameObject.SetActive(false);
                 marketplaceCanvas.gameObject.SetActive(false);
+                if (CreditsCanvas != null)
+                    CreditsCanvas.gameObject.SetActive(false);
                 //IntroCanvas.SetActive(true);
 
                 //StartCoroutine(ShowIntroThenLogin());
@@ -272,6 +278,8 @@ public class GameManager : MonoBehaviour
                     audioCanvas.gameObject.SetActive(false);
                     videoCanvas.gameObject.SetActive(false);
                     marketplaceCanvas.gameObject.SetActive(false);
+                    if (CreditsCanvas != null)
+                        CreditsCanvas.gameObject.SetActive(false);
                 }
                 else
                 {
@@ -287,6 +295,8 @@ public class GameManager : MonoBehaviour
                     audioCanvas.gameObject.SetActive(false);
                     videoCanvas.gameObject.SetActive(false);
                     marketplaceCanvas.gameObject.SetActive(false);
+                    if (CreditsCanvas != null)
+                        CreditsCanvas.gameObject.SetActive(false);
                 }
             }
             
@@ -452,20 +462,18 @@ public class GameManager : MonoBehaviour
         {
             InstructionsButton.onClick.AddListener(OnHTPClicked);
         }
-        //if (characterButton != null)
-        //{
-        //    characterButton.onClick.AddListener(OnCharacterClicked);
-        //}
 
-        //if (colorsButton != null)
-        //{
-        //    colorsButton.onClick.AddListener(OnColorsClicked);
-        //}
 
-        //if (myAssetsButton != null)
-        //{
-        //    myAssetsButton.onClick.AddListener(OnMyAssetsClicked);
-        //}
+        if (CreditsButton != null)
+        {
+            CreditsButton.onClick.AddListener(OnCreditsClicked);
+        }
+
+        if (CreditsBackButton != null)
+        {
+            CreditsBackButton.onClick.AddListener(OnCreditsBack);
+        }
+        
 
         // Add listeners for color selection buttons
         if (purpleButton != null)
@@ -532,7 +540,7 @@ public class GameManager : MonoBehaviour
         loginCanvas.gameObject.SetActive(false);
 
         // Show intro for 3 seconds (adjust as needed)
-        yield return new WaitForSecondsRealtime(35f);
+        yield return new WaitForSecondsRealtime(63f);
 
         IntroCanvas.gameObject.SetActive(false);
         AudioManager.Instance.PlayMenuMusic();
@@ -552,7 +560,10 @@ public class GameManager : MonoBehaviour
         {
             if (Time.time - initialGhostTime >= GhostCountdown)
             {
-                Debug.Log("Ghost color duration ended, reverting to purple.");
+                //Debug.Log("Ghost clicked, attempting to play TickSound.");
+                // Start looping TickSound if not already playing
+               
+                //Debug.Log("Ghost color duration ended, reverting to purple.");
                 ghostEnabled = false;
                 if (ghostButton != null)
                 {
@@ -560,6 +571,7 @@ public class GameManager : MonoBehaviour
                 }
                 SetPaintColor("purple");
                 ghostClicked = false;
+                
             }
         }
 
@@ -725,7 +737,7 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.SetInt("SelectedCharacterIndex", selectedCharacterIndex);
         PlayerPrefs.Save();
 
-        Debug.Log($"✅ Character {selectedPrefab.name} selected from menu and saved (Index: {selectedCharacterIndex}).");
+        //Debug.Log($"✅ Character {selectedPrefab.name} selected from menu and saved (Index: {selectedCharacterIndex}).");
 
         // Reassign player immediately in scene if game already started
         
@@ -765,7 +777,7 @@ public class GameManager : MonoBehaviour
         if (pm != null) pm.SetPlayer(player);
 
             
-        Debug.Log("✅ Player prefab re-instantiated and linked to systems during gameplay.");
+        //Debug.Log("✅ Player prefab re-instantiated and linked to systems during gameplay.");
         
         LoadingCanvas.gameObject.SetActive(true);
         // Continue with the smooth UI transition
@@ -823,7 +835,7 @@ public class GameManager : MonoBehaviour
         if (characterButtonIcon != null)
             characterButtonIcon.gameObject.SetActive(true);
 
-        Debug.Log("✅ Character selection complete, returning to main menu smoothly.");
+        //Debug.Log("✅ Character selection complete, returning to main menu smoothly.");
     }
 
     void StartGame()
@@ -912,11 +924,11 @@ public class GameManager : MonoBehaviour
         UpdateXPText(); // Update XP display on game over
         UpdateGameOverText();
         UpdateGOMenuWalletInfo();
-        Debug.Log("Game Over: Updating wallet info");
-        Debug.Log("Submitting score...");
+        //Debug.Log("Game Over: Updating wallet info");
+        //Debug.Log("Submitting score...");
         await SubmitScore();
         Debug.Log("Score submitted successfully");
-        Debug.Log("Fetching top players...");
+        //Debug.Log("Fetching top players...");
         
     }
 
@@ -1327,7 +1339,7 @@ public class GameManager : MonoBehaviour
             {
                 initialGhostTime = Time.time; // Reset ghost timer on color change
                 ghostClicked = true;
-                Debug.Log("Ghost color activated, timer reset.");
+                //Debug.Log("Ghost color activated, timer reset.");
             }
             
         }
@@ -1380,7 +1392,7 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    void UpdatePauseMenuWalletInfo()
+    async Task UpdatePauseMenuWalletInfo()
     {
         if (walletConnectManager != null)
         {
@@ -1403,11 +1415,13 @@ public class GameManager : MonoBehaviour
                 Debug.LogWarning("walletAddressText reference not set in GameManager!");
             }
 
+
             // Update claimed token balance display
             if (claimedTokenText != null)
             {
                 if (walletConnectManager.CustomTokenBalanceText != null)
                 {
+                    walletConnectManager.GetLiveTokenBalance();
                     claimedTokenText.text = walletConnectManager.CustomTokenBalanceText.text;
                     claimedTokenText.gameObject.SetActive(true);
                 }
@@ -1618,11 +1632,11 @@ public class GameManager : MonoBehaviour
 
     public async Task SubmitScore()
     {
-        Debug.Log($"Your rank....");
+        //Debug.Log($"Your rank....");
         //_rankText.text = $"Global Rank: ...";
-        Debug.Log($"..");
+        //Debug.Log($"..");
         await walletConnectManager.SubmitScore(totalXP);
-        Debug.Log($"submitted score....");
+        //Debug.Log($"submitted score....");
         //int rank = await WalletConnectManager.Instance.GetRank();
         //Debug.Log($"Extracted rank.");
         //if (_rankText != null)
@@ -1656,7 +1670,7 @@ public class GameManager : MonoBehaviour
     void OnTextEntered(string text)
     {
         capturedText = text;
-        Debug.Log("Captured: " + capturedText);
+        //Debug.Log("Captured: " + capturedText);
     }
 
     public async void GetLeaderboard()
@@ -1698,9 +1712,9 @@ public class GameManager : MonoBehaviour
         // Perform the transition using the detected current canvas
         currentCanvas.gameObject.SetActive(false);
         
-        Debug.Log("Dots loading");
+        //Debug.Log("Dots loading");
         //loadingDots.StartLoading();
-        Debug.Log("Reading blockchain data");
+        //Debug.Log("Reading blockchain data");
         //await WalletConnectManager.Instance.GetScoreList();
         for (int i = 0; i < 10; i++)
         {
@@ -1709,7 +1723,7 @@ public class GameManager : MonoBehaviour
         //UpdateNameFields();
         UpdateScoreFields();
         UpdateNameFields();
-        Debug.Log("done Reading");
+        //Debug.Log("done Reading");
         
         leaderboardCanvas.gameObject.SetActive(true);
         LoadingCanvas.gameObject.SetActive(false);
@@ -1806,18 +1820,20 @@ public class GameManager : MonoBehaviour
         {
             player.Heal(1);
         }
+
+        AudioManager.Instance.PlayShortSuccessSound();
     }
 
     private void SetMusicVolume(float value)
     {
-        Debug.Log($"Music Slider Value: {value}");
+        //Debug.Log($"Music Slider Value: {value}");
         float volume = Mathf.Clamp(value, 0.0001f, 1f);
         AudioManager.Instance.SetMusicVolume(volume);
     }
 
     private void SetEffectsVolume(float value)
     {
-        Debug.Log($"Effexts Slider Value: {value}");
+        //Debug.Log($"Effexts Slider Value: {value}");
         float volume = Mathf.Clamp(value, 0.0001f, 1f);
         AudioManager.Instance.SetEffectsVolume(volume);
     }
@@ -1894,7 +1910,7 @@ public class GameManager : MonoBehaviour
 
     void OnMplaceClicked()
     {
-        Debug.Log("Marketplace Clicked");
+        //Debug.Log("Marketplace Clicked");
 
         if (marketplaceCanvas == null || resumeMenu == null)
         {
@@ -1906,8 +1922,8 @@ public class GameManager : MonoBehaviour
         //marketplaceCanvas.gameObject.SetActive(true);
         marketplaceCanvas.gameObject.SetActive(true);
         walletConnectManager.DisableMessageText(); // Hide any previous messages
-        Debug.Log($"ResumeMenu activeInHierarchy: {resumeMenu.gameObject.activeInHierarchy}");
-        Debug.Log($"Marketplace activeInHierarchy: {marketplaceCanvas.gameObject.activeInHierarchy}");
+        //Debug.Log($"ResumeMenu activeInHierarchy: {resumeMenu.gameObject.activeInHierarchy}");
+        //Debug.Log($"Marketplace activeInHierarchy: {marketplaceCanvas.gameObject.activeInHierarchy}");
 
 
 
@@ -1915,7 +1931,7 @@ public class GameManager : MonoBehaviour
         Canvas.ForceUpdateCanvases();
         
 
-        Debug.Log("Marketplace UI forced to update");
+        //Debug.Log("Marketplace UI forced to update");
     }
 
 
@@ -2006,6 +2022,8 @@ public class GameManager : MonoBehaviour
             ghostButton.gameObject.SetActive(true);
             ghostEnabled = true;
         }
+
+        AudioManager.Instance.PlayShortSuccessSound();
     }
 
     public bool isColourActive(int colorIndex)
@@ -2022,6 +2040,20 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public void OnCreditsClicked()
+    {
+        AudioManager.Instance.PlayClickSound();
+        OptionCanvas.gameObject.SetActive(false);
+        CreditsCanvas.gameObject.SetActive(true);
+    }
+
+    public void OnCreditsBack()
+    {
+        AudioManager.Instance.PlayClickSound();
+        OptionCanvas.gameObject.SetActive(true);
+        CreditsCanvas.gameObject.SetActive(false);
     }
 
     public void QuitToLogin()
