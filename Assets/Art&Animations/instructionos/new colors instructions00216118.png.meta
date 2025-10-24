@@ -560,7 +560,24 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      new colors instructions00216118_0: -191105246292763656
+      new colors instructions00216118_1: -6018637853370623795
+      new colors instructions00216118_10: -6436199255061486721
+      new colors instructions00216118_11: 9050931879010914043
+      new colors instructions00216118_12: 6794621822141205607
+      new colors instructions00216118_13: 5600725241060632063
+      new colors instructions00216118_14: -5380372342816116989
+      new colors instructions00216118_15: 3492258311162616358
+      new colors instructions00216118_16: 5800621508181705274
+      new colors instructions00216118_2: -5458428162063212217
+      new colors instructions00216118_3: -477750717145106108
+      new colors instructions00216118_4: 3473564802566826031
+      new colors instructions00216118_5: -3332777638196618476
+      new colors instructions00216118_6: -5764252152639291493
+      new colors instructions00216118_7: 7075419338219910727
+      new colors instructions00216118_8: 4269283141769006101
+      new colors instructions00216118_9: 4240867548296873262
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

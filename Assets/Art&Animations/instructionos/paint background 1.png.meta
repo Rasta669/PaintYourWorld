@@ -560,7 +560,24 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      paint background 1_0: -6275709910718918983
+      paint background 1_1: 908138944915216500
+      paint background 1_10: 3148197617177025395
+      paint background 1_11: 4307008829630044575
+      paint background 1_12: -8475332605916320810
+      paint background 1_13: 1343117416296933014
+      paint background 1_14: -3900703486560928724
+      paint background 1_15: 2892801607036603239
+      paint background 1_16: -451477464297389357
+      paint background 1_2: 8780169419704875511
+      paint background 1_3: -24453412755500370
+      paint background 1_4: 1990049451153230652
+      paint background 1_5: -8758497585969138140
+      paint background 1_6: 6051095744513522563
+      paint background 1_7: -5920476896908642140
+      paint background 1_8: 3232955294714248145
+      paint background 1_9: -6855681827016743603
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 

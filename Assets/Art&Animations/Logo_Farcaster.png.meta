@@ -147,7 +147,8 @@ TextureImporter:
     secondaryTextures: []
     spriteCustomMetadata:
       entries: []
-    nameFileIdTable: {}
+    nameFileIdTable:
+      Logo_Farcaster_0: -7881379187661084790
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
