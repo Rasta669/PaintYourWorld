@@ -506,10 +506,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   obstaclePrefab: {fileID: 2941023152248006574, guid: 83c35492974602b488bead7129c31408, type: 3}
   player: {fileID: 4850141906880474082, guid: daba9e7ae1c9d7f45bb0642807ff34d7, type: 3}
-  firstSpawnXDistance: 50
+  firstSpawnXDistance: 60
   spawnYHeight: 5
-  spawnXSpacing: 30
-  spawnInterval: 25
+  spawnXSpacing: 40
+  spawnInterval: 40
   obstacleLifetime: 60
 --- !u!4 &356266965
 Transform:
@@ -676,7 +676,7 @@ MonoBehaviour:
   spawnBufferAhead: 3
   distanceBetweenSpawns: 0
   yOffsetRange: 1
-  spawnInterval: 10
+  spawnInterval: 20
   initialSpawnDelay: 50
   minSpeed: 1
   maxSpeed: 2
@@ -1011,7 +1011,7 @@ MonoBehaviour:
   <UseTokenText1>k__BackingField: {fileID: 1002996723}
   <UseTokenText2>k__BackingField: {fileID: 185567111}
   <UseTokenTextH>k__BackingField: {fileID: 99732226}
-  <TokenBalanceText>k__BackingField: {fileID: 1765566858}
+  <TokenBalanceText>k__BackingField: {fileID: 1505862218}
   <UseTokenBalanceText1>k__BackingField: {fileID: 931355220}
   <UseTokenBalanceText2>k__BackingField: {fileID: 986882274}
   <UseTokenBalanceTextH>k__BackingField: {fileID: 900929026}
@@ -1072,8 +1072,8 @@ MonoBehaviour:
   rewardPrefab: {fileID: 5863097387859994752, guid: 8973d4454a891c840bbfd7b292e6cc6b, type: 3}
   player: {fileID: 7112316794569255527, guid: daba9e7ae1c9d7f45bb0642807ff34d7, type: 3}
   mainCamera: {fileID: 519420031}
-  initialXInterval: 20
-  minXInterval: 50
+  initialXInterval: 40
+  minXInterval: 100
   difficultyIncreaseRate: 0.01
   rewardValue: 50
 --- !u!4 &731767164
@@ -1135,12 +1135,14 @@ MonoBehaviour:
   brushHeight: 2
   platformPrefab: {fileID: 6319565716877975017, guid: 5beafb7c306ab804e99281879abe37d0, type: 3}
   particlePrefab: {fileID: 1926987486}
-  platformsParent: {fileID: 0}
+  platformsParent: {fileID: 8843855638248439456, guid: 5beafb7c306ab804e99281879abe37d0, type: 3}
   selectedColor: purple
   player: {fileID: 7112316794569255527, guid: daba9e7ae1c9d7f45bb0642807ff34d7, type: 3}
   paintParticles: {fileID: 0}
   joystick: {fileID: 0}
   paintParticleLifetime: 1
+  poolSize: 50
+  recycleDistance: 20
 --- !u!4 &781199702
 Transform:
   m_ObjectHideFlags: 0
@@ -2154,7 +2156,8 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 4507272671279728539, guid: 57bc33d595a2e884082f3cc1db0fa050, type: 3}
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 7807044625160724952, guid: 57bc33d595a2e884082f3cc1db0fa050, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 57bc33d595a2e884082f3cc1db0fa050, type: 3}
@@ -2309,6 +2312,11 @@ Transform:
   m_Children: []
   m_Father: {fileID: 1558928251}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1369072039 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 6710966117197218836, guid: 57bc33d595a2e884082f3cc1db0fa050, type: 3}
+  m_PrefabInstance: {fileID: 1244105541}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1478323154
 GameObject:
   m_ObjectHideFlags: 0
@@ -2567,6 +2575,17 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!114 &1505862218 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3424002667529657251, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+  m_PrefabInstance: {fileID: 9087303043559377471}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &1558928249
 GameObject:
   m_ObjectHideFlags: 0
@@ -2806,10 +2825,11 @@ MonoBehaviour:
   initialMinXDistance: 8
   initialMaxXDistance: 10
   minXDistanceLimit: 3
-  initialMoveSpeed: 0.8
-  maxMoveSpeed: 6
+  initialMoveSpeed: 0.7
+  maxMoveSpeed: 4
   ySpawnRangeBelow: 4
   ySpawnRangeAbove: 5
+  poolSize: 20
 --- !u!4 &1637347259
 Transform:
   m_ObjectHideFlags: 0
@@ -2876,17 +2896,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
---- !u!114 &1765566858 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 3277461444307610798, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-  m_PrefabInstance: {fileID: 9087303043559377471}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f4688fdb7df04437aeb418b961361dc5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &1799317720
 GameObject:
   m_ObjectHideFlags: 0
@@ -3671,6 +3680,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 519420031}
     - target: {fileID: 990904210079689015, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: mobileJockey
+      value: 
+      objectReference: {fileID: 1369072039}
+    - target: {fileID: 990904210079689015, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: paintManager
       value: 
       objectReference: {fileID: 781199701}
@@ -3698,30 +3711,10 @@ PrefabInstance:
       propertyPath: m_Camera
       value: 
       objectReference: {fileID: 519420031}
-    - target: {fileID: 3369099301385922904, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_RenderMode
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 3369099301385922904, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_UpdateRectTransformForStandalone
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 3876594141621899165, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 707937803}
-    - target: {fileID: 4660226295412492231, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660226295412492231, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 4660226295412492231, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_AnchoredPosition.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 5078048941331552686, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
@@ -3734,16 +3727,8 @@ PrefabInstance:
       propertyPath: m_Name
       value: UIManager
       objectReference: {fileID: 0}
-    - target: {fileID: 5689455757470090944, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_AnchorMax.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5689455757470090944, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_AnchorMin.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 5689455757470090944, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_AnchoredPosition.x
+    - target: {fileID: 6238692965853859048, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
+      propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6656769383099879165, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
@@ -3786,19 +3771,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 7374988372648534377, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_SizeDelta.x
-      value: 0
-      objectReference: {fileID: 0}
     - target: {fileID: 7674442015710098202, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 707937803}
     - target: {fileID: 7888074450139289298, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
-      propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
-      value: 
-      objectReference: {fileID: 707937803}
-    - target: {fileID: 7902884979322061580, guid: 5109fb4ecb985d845a53be716eec0323, type: 3}
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 707937803}

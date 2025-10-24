@@ -137,7 +137,7 @@ public class WalletConnectManager : MonoBehaviour
     [field: SerializeField] 
     public BigInteger GhostPrice { get; set; } = 200;
 
-    private BigInteger colorPrice;
+    private BigInteger colorPrice = 50;
     
 
     private List<GameObject> instantiatedNfts = new List<GameObject>();
@@ -693,16 +693,24 @@ public class WalletConnectManager : MonoBehaviour
 
             if (!string.IsNullOrEmpty(BuyTokenContractAddress))
             {
+                colorPrice = GetColorPrice(colorIndex);
+                var colorPriceWei = colorPrice * BigInteger.Pow(10, 18); //Assuming 2 decimals for token
+                Debug.Log($"Color price in wei: {colorPrice}");
                 var tokencontract = await ThirdwebManager.Instance.GetContract(BuyTokenContractAddress, ActiveChainId);
-                var decimals = 2;
+                var decimals = 0;
                 var tokenBalance = await tokencontract.ERC20_BalanceOf(walletAddress);
                 Debug.Log($"Balance: {tokenBalance} tokens");
                 var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-                if (tokenBalance < colorPrice) {
+                if (tokenBalance < colorPriceWei) {
                     if (BuyTokenBalanceText != null)
                     {
                         BuyTokenBalanceText.gameObject.SetActive(true);
                         BuyTokenBalanceText.text = $"Need {colorPrice} color...";
+                    }
+
+                    if (BuyButton != null)
+                    {
+                        BuyButton.interactable = true;
                     }
                 }
                 else
@@ -990,6 +998,7 @@ public class WalletConnectManager : MonoBehaviour
     { 
         if (colorIndex == 0)
         {
+            colorPrice = 100;
             //Brown
             if (UseButton1 != null)
             {
@@ -1010,11 +1019,13 @@ public class WalletConnectManager : MonoBehaviour
             {
                 BuyTokenBalanceText = BuyTokenBalanceText1;
             }
-            colorPrice = 100;
+            
         }
         else if (colorIndex == 1)
         {
             //Ghost
+            colorPrice = 200;
+
             if (UseButton2 != null)
             {
                 UseButton = UseButton2;
@@ -1034,11 +1045,12 @@ public class WalletConnectManager : MonoBehaviour
             {
                 BuyTokenBalanceText = BuyTokenBalanceText2;
             }
-            colorPrice = 200;
+            
         }
         else if (colorIndex == 2)
         {
-            //Ghost
+            //health
+            colorPrice = 50;
             if (UseButtonH != null)
             {
                 UseButton = UseButtonH;
@@ -1058,9 +1070,28 @@ public class WalletConnectManager : MonoBehaviour
             {
                 BuyTokenBalanceText = BuyTokenBalanceTextH;
             }
-            colorPrice = 50;
+            
         }
+         Debug.Log($"Set UI elements for color index {colorIndex}");
+    }
 
+    public BigInteger GetColorPrice(int colorIndex)
+    {
+        BigInteger price = 0;
+        if (colorIndex == 0)
+        {
+            price = 100;
+        }
+        else if (colorIndex == 1)
+        {
+            price = 200;
+        }
+        else if (colorIndex == 2)
+        {
+            price = 50;
+        }
+        Debug.Log($"Color index {colorIndex} has price {price}");
+        return price;
     }
     public string GetColorContractAddress(int colorIndex)
     {
@@ -1081,12 +1112,12 @@ public class WalletConnectManager : MonoBehaviour
 
     public async void SetNftBalances()
     {
-        TokenBalanceText.text = $"Loading balances...";
+        TokenBalanceText.text = $"Loading balance...";
         var tokens = await ThirdwebManager.Instance.GetContract(TokenContractAddress, ActiveChainId);
         var tokenBalance = await tokens.ERC20_BalanceOf(walletAddress);
-        var decimals = 2;
+        var decimals = 0;
         var tokenBalanceFormatted = Utils.ToEth(tokenBalance.ToString(), decimals, addCommas: true);
-        TokenBalanceText.text = $"Owned: {tokenBalanceFormatted}";
+        TokenBalanceText.text = $"{tokenBalanceFormatted}";
 
         UseTokenBalanceText1.text = $"Loading balances...";
         var brownnft = await ThirdwebManager.Instance.GetContract(BuyNftBrownAddress, ActiveChainId);

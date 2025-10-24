@@ -24,6 +24,8 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Canvas OptionCanvas;
     [SerializeField] private Canvas videoCanvas;
     [SerializeField] private Canvas audioCanvas;
+    [SerializeField] private Canvas IntroCanvas;
+    [SerializeField] private Canvas CTSCanvas;
     //[SerializeField] private GameObject characterPanel;
     //[SerializeField] private GameObject colorsPanel;
     //[SerializeField] private GameObject myAssetsPanel;
@@ -44,6 +46,10 @@ public class GameManager : MonoBehaviour
     [SerializeField] private Button mplaceButtonIcon;           // Reference to your back to main menu button
     [SerializeField] private Button mplaceButton;           // Reference to your back to resume menu button
     [SerializeField] private Button mplaceBackButton;           // Reference to your back to resume menu button
+    [SerializeField] private Button leaderboardButton;           
+    [SerializeField] private Button leaderboardBackButton;           
+    [SerializeField] private Button InstructionsButton;           
+    [SerializeField] private Button InstructionsBackButton;           
     //[SerializeField] private Button characterButton;           // Reference to your back to resume menu button
     //[SerializeField] private Button myAssetsButton;           // Reference to your back to resume menu button
     //[SerializeField] private Button colorsButton;           // Reference to your back to resume menu button
@@ -74,6 +80,7 @@ public class GameManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI walletAddressText; // New: Displays wallet address in pause menu
     [SerializeField] private TextMeshProUGUI claimedTokenText; // New: Displays claimed token balance in pause menu
     [SerializeField] private TextMeshProUGUI GOclaimedTokenText; // New: Displays claimed token balance in pause menu
+    [SerializeField] private GameObject mobileJockey; // New: Displays claimed token balance in pause menu
     [SerializeField] private List<Image> heartImages;
     private TextMeshProUGUI _rankText;
     private Vector3 initialPlayerPosition; // Store player's starting position
@@ -82,7 +89,7 @@ public class GameManager : MonoBehaviour
     private int obstacleBonus = 10; // XP bonus per obstacle passed
     private WalletConnectManager walletConnectManager; // Reference to WalletConnectManager
     private float initialGhostTime = 0f;
-    [SerializeField] private float GhostCountdown = 10f;  // New: Marketplace canvas
+    [SerializeField] private float GhostCountdown = 30f;  // New: Marketplace canvas
 
     // Instruction UI fields
     public Canvas instructionCanvas;    // Reference to instruction canvas
@@ -92,6 +99,7 @@ public class GameManager : MonoBehaviour
     public Sprite[] instructionSprites; // Array of instruction sprites
     private int currentInstructionIndex = 0; // Track current instruction sprite
     private bool showingInstructions = false; // Track if instructions are being shown
+    private bool introShown = false; // Track if instructions are being shown
 
     [SerializeField] private Canvas characterSelectCanvas;  // New: character select screen
     [SerializeField] private Canvas characterMenuSelectCanvas;  // New: character select screen
@@ -107,6 +115,8 @@ public class GameManager : MonoBehaviour
     private bool brownEnabled = false;
     private bool ghostEnabled = false;
     private bool ghostClicked = false;
+    private Coroutine introCoroutine;
+    private bool hasUserClicked = false;
 
     // Camera follow settings
     public float smoothSpeed = 0.125f; // How smooth the camera follows (lower = smoother but slower)
@@ -207,29 +217,20 @@ public class GameManager : MonoBehaviour
         // Ensure correct UI state at start
         if (mainMenuCanvas != null && loginCanvas != null && pauseMenu != null && resumeMenu != null && gameOverMenu != null)
         {
-
-            AudioManager.Instance.PlayMenuMusic();
-            if (isGameLoggedIn)
+            if (!introShown && IntroCanvas != null)
             {
+                CTSCanvas.gameObject.SetActive(true);
+                loginCanvas.gameObject.SetActive(false);
+                introShown = true;
+                Time.timeScale = 0f;
                 if (loginCanvas != null)
                 {
                     loginCanvas.gameObject.SetActive(false);
                 }
-                mainMenuCanvas.gameObject.SetActive(true);
-                pauseMenu.gameObject.SetActive(false);
-                resumeMenu.gameObject.SetActive(false);
-                gameOverMenu.gameObject.SetActive(false);
-                HTPCanvas.gameObject.SetActive(false);
-                leaderboardCanvas.gameObject.SetActive(false);
-                LoadingCanvas.gameObject.SetActive(false);
-                OptionCanvas.gameObject.SetActive(false);
-                audioCanvas.gameObject.SetActive(false);
-                videoCanvas.gameObject.SetActive(false);
-                marketplaceCanvas.gameObject.SetActive(false);
-            }
-            else
-            {
-                loginCanvas.gameObject.SetActive(true);
+                if (mobileJockey != null)
+                {
+                    mobileJockey.gameObject.SetActive(false);
+                }
                 mainMenuCanvas.gameObject.SetActive(false);
                 pauseMenu.gameObject.SetActive(false);
                 resumeMenu.gameObject.SetActive(false);
@@ -241,11 +242,60 @@ public class GameManager : MonoBehaviour
                 audioCanvas.gameObject.SetActive(false);
                 videoCanvas.gameObject.SetActive(false);
                 marketplaceCanvas.gameObject.SetActive(false);
+                //IntroCanvas.SetActive(true);
+
+                //StartCoroutine(ShowIntroThenLogin());
             }
+            else
+            {
+                IntroCanvas.gameObject.SetActive(false);
+                AudioManager.Instance.PlayMenuMusic();
+                if (isGameLoggedIn)
+                {
+                    if (loginCanvas != null)
+                    {
+                        loginCanvas.gameObject.SetActive(false);
+                    }
+
+                    if (mobileJockey != null)
+                    {
+                        mobileJockey.gameObject.SetActive(false);
+                    }
+                    mainMenuCanvas.gameObject.SetActive(true);
+                    pauseMenu.gameObject.SetActive(false);
+                    resumeMenu.gameObject.SetActive(false);
+                    gameOverMenu.gameObject.SetActive(false);
+                    HTPCanvas.gameObject.SetActive(false);
+                    leaderboardCanvas.gameObject.SetActive(false);
+                    LoadingCanvas.gameObject.SetActive(false);
+                    OptionCanvas.gameObject.SetActive(false);
+                    audioCanvas.gameObject.SetActive(false);
+                    videoCanvas.gameObject.SetActive(false);
+                    marketplaceCanvas.gameObject.SetActive(false);
+                }
+                else
+                {
+                    loginCanvas.gameObject.SetActive(true);
+                    mainMenuCanvas.gameObject.SetActive(false);
+                    pauseMenu.gameObject.SetActive(false);
+                    resumeMenu.gameObject.SetActive(false);
+                    gameOverMenu.gameObject.SetActive(false);
+                    HTPCanvas.gameObject.SetActive(false);
+                    leaderboardCanvas.gameObject.SetActive(false);
+                    LoadingCanvas.gameObject.SetActive(false);
+                    OptionCanvas.gameObject.SetActive(false);
+                    audioCanvas.gameObject.SetActive(false);
+                    videoCanvas.gameObject.SetActive(false);
+                    marketplaceCanvas.gameObject.SetActive(false);
+                }
+            }
+            
             if (instructionCanvas != null)
             {
                 instructionCanvas.gameObject.SetActive(false);
             }
+
+            
 
             
 
@@ -392,6 +442,16 @@ public class GameManager : MonoBehaviour
             mplaceBackButton.onClick.AddListener(OnMplaceBack);
         }
 
+        if (leaderboardButton != null)
+        {
+            leaderboardButton.onClick.AddListener(OnLeaderboardClicked);
+        }
+
+        
+        if (InstructionsButton != null)
+        {
+            InstructionsButton.onClick.AddListener(OnHTPClicked);
+        }
         //if (characterButton != null)
         //{
         //    characterButton.onClick.AddListener(OnCharacterClicked);
@@ -466,6 +526,19 @@ public class GameManager : MonoBehaviour
         SceneManager.sceneLoaded -= OnSceneLoaded;
     }
 
+    private IEnumerator ShowIntroThenLogin()
+    {
+        IntroCanvas.gameObject.SetActive(true);
+        loginCanvas.gameObject.SetActive(false);
+
+        // Show intro for 3 seconds (adjust as needed)
+        yield return new WaitForSecondsRealtime(35f);
+
+        IntroCanvas.gameObject.SetActive(false);
+        AudioManager.Instance.PlayMenuMusic();
+        loginCanvas.gameObject.SetActive(true);
+        introCoroutine = null;
+    }
 
     void Update()
     {
@@ -489,7 +562,29 @@ public class GameManager : MonoBehaviour
                 ghostClicked = false;
             }
         }
-       
+
+        if (!hasUserClicked && (Input.anyKeyDown || Input.GetMouseButtonDown(0)))
+        {
+            hasUserClicked = true;
+            CTSCanvas.gameObject.SetActive(false);
+            introCoroutine = StartCoroutine(ShowIntroThenLogin());
+        }
+
+    }
+
+    public void SkipIntro()
+    {
+        if (introCoroutine != null)
+        {
+            StopCoroutine(introCoroutine);
+            introCoroutine = null;
+        }
+
+        IntroCanvas.gameObject.SetActive(false);
+        CTSCanvas.gameObject.SetActive(false);
+        loginCanvas.gameObject.SetActive(true);
+        AudioManager.Instance.PlayMenuMusic();
+        hasUserClicked = true; // Prevent the coroutine from restarting due to Update()
     }
 
     void FollowPlayer()
@@ -795,7 +890,8 @@ public class GameManager : MonoBehaviour
         totalXP = 0; // Reset XP on new game
         UpdateXPText();
         UpdatePauseMenuWalletInfo();
-
+        if (mobileJockey != null)
+            mobileJockey.gameObject.SetActive(true);
         // Start the game
         Time.timeScale = 1f;
         isGameStarted = true;
@@ -808,6 +904,8 @@ public class GameManager : MonoBehaviour
         isGameStarted = false;
         hasDied = true;
         gameOverMenu.gameObject.SetActive(true);
+        if (mobileJockey != null)
+            mobileJockey.gameObject.SetActive(false);
         AudioManager.Instance.PlayGameOverMusic();
         pauseMenu.gameObject.SetActive(false);
         Time.timeScale = 0f;
@@ -1115,6 +1213,8 @@ public class GameManager : MonoBehaviour
             claimButton.interactable = true;
         }
         pauseMenu.gameObject.SetActive(true);
+        if (mobileJockey != null)
+            mobileJockey.gameObject.SetActive(true);
         Time.timeScale = 1f;
         isGameStarted = true;
         UpdateXPText();
@@ -1172,7 +1272,9 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f;
         pauseMenu.gameObject.SetActive(false);
         resumeMenu.gameObject.SetActive(true);
-        
+        if (mobileJockey != null)
+            mobileJockey.gameObject.SetActive(false);
+
         UpdateXPText(); // Update XP display when pausing
         //UpdatePauseMenuWalletInfo(); // Update wallet and token info in pause menu
         walletConnectManager.SetNftBalances(); // Ensure wallet connection is up to date
@@ -1188,8 +1290,11 @@ public class GameManager : MonoBehaviour
     {
         AudioManager.Instance.PlayGameplayMusic();
         Time.timeScale = 1f;
+        if (mobileJockey != null)
+            mobileJockey.gameObject.SetActive(true);
         resumeMenu.gameObject.SetActive(false);
         pauseMenu.gameObject.SetActive(true);
+
     }
    
 
@@ -1597,7 +1702,7 @@ public class GameManager : MonoBehaviour
         //loadingDots.StartLoading();
         Debug.Log("Reading blockchain data");
         //await WalletConnectManager.Instance.GetScoreList();
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             await walletConnectManager.ReadScore(i);
         }
@@ -1643,7 +1748,7 @@ public class GameManager : MonoBehaviour
         //    nameFields[i].text = nameList[i];
         //}      
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             string name = nameList[i];
             if (name.Length > 8)
@@ -1657,7 +1762,7 @@ public class GameManager : MonoBehaviour
     {
         scoreList = walletConnectManager.ScoreList();
 
-        for (int i = 0; i < 5; i++)
+        for (int i = 0; i < 10; i++)
         {
             scoreFields[i].text = scoreList[i].ToString();
         }
@@ -1917,5 +2022,39 @@ public class GameManager : MonoBehaviour
         {
             return false;
         }
+    }
+
+    public void QuitToLogin()
+    {
+        AudioManager.Instance.PlayClickSound();
+        ResetGameState();
+        isGameLoggedIn = false;
+
+        // Hide all canvases
+        pauseMenu.gameObject.SetActive(false);
+        resumeMenu.gameObject.SetActive(false);
+        gameOverMenu.gameObject.SetActive(false);
+        mainMenuCanvas.gameObject.SetActive(false);
+        leaderboardCanvas.gameObject.SetActive(false);
+        HTPCanvas.gameObject.SetActive(false);
+        OptionCanvas.gameObject.SetActive(false);
+        audioCanvas.gameObject.SetActive(false);
+        videoCanvas.gameObject.SetActive(false);
+        marketplaceCanvas.gameObject.SetActive(false);
+        characterSelectCanvas.gameObject.SetActive(false);
+        characterMenuSelectCanvas.gameObject.SetActive(false);
+
+        // Show login canvas
+        loginCanvas.gameObject.SetActive(true);
+
+        // Reset timescale
+        Time.timeScale = 0f;
+
+        // Play menu music
+        AudioManager.Instance.PlayMenuMusic();
+
+        // Optional: Clear canvas stack
+        canvasStack.Clear();
+        canvasStack.Push(loginCanvas.gameObject);
     }
 }

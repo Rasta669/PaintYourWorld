@@ -15,10 +15,10 @@ GameObject:
   - component: {fileID: -7100125427806582122}
   m_Layer: 0
   m_Name: Enemy bird
-  m_TagString: obstacle
+  m_TagString: bird
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
+  m_StaticEditorFlags: 2147483647
   m_IsActive: 1
 --- !u!4 &7584039608256883440
 Transform:
@@ -124,6 +124,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 98a4b7c207cde1b478f5b69970bf9c29, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  collisionCheckRadius: 0.4
+  passBonusOffset: 1.5
 --- !u!60 &-7100125427806582122
 PolygonCollider2D:
   m_ObjectHideFlags: 0

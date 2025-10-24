@@ -1,0 +1,1155 @@
+fileFormatVersion: 2
+guid: 592880f9b5f4fee40930762a326f0b3e
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 466756418366182343
+    second: layout text and icons NEW_0
+  - first:
+      213: 6996792071033392945
+    second: layout text and icons NEW_1
+  - first:
+      213: -4993707142439570574
+    second: layout text and icons NEW_2
+  - first:
+      213: 7210075368953675869
+    second: layout text and icons NEW_3
+  - first:
+      213: 2039911165302086239
+    second: layout text and icons NEW_4
+  - first:
+      213: -3116781851029160280
+    second: layout text and icons NEW_5
+  - first:
+      213: -2855030829693122361
+    second: layout text and icons NEW_6
+  - first:
+      213: -1555990008561255289
+    second: layout text and icons NEW_7
+  - first:
+      213: -1916237363915175490
+    second: layout text and icons NEW_8
+  - first:
+      213: 7759849003227377690
+    second: layout text and icons NEW_9
+  - first:
+      213: 2553876943512233059
+    second: layout text and icons NEW_10
+  - first:
+      213: 2233007478366972954
+    second: layout text and icons NEW_11
+  - first:
+      213: 9122770121364502049
+    second: layout text and icons NEW_12
+  - first:
+      213: 5749510021199092343
+    second: layout text and icons NEW_13
+  - first:
+      213: 3864944049870695396
+    second: layout text and icons NEW_14
+  - first:
+      213: 7030079256286930293
+    second: layout text and icons NEW_15
+  - first:
+      213: -70376418722675253
+    second: layout text and icons NEW_16
+  - first:
+      213: 474792898918199174
+    second: layout text and icons NEW_17
+  - first:
+      213: -1217850830598366461
+    second: layout text and icons NEW_18
+  - first:
+      213: 1094469110015281950
+    second: layout text and icons NEW_19
+  - first:
+      213: -8644304909851991713
+    second: layout text and icons NEW_20
+  - first:
+      213: 8256447169248294605
+    second: layout text and icons NEW_21
+  - first:
+      213: 4655148951586812001
+    second: layout text and icons NEW_22
+  - first:
+      213: -1619635888257563408
+    second: layout text and icons NEW_23
+  - first:
+      213: -8735034288164083182
+    second: layout text and icons NEW_24
+  - first:
+      213: -8685112068444179886
+    second: layout text and icons NEW_25
+  - first:
+      213: -1112093353825424689
+    second: layout text and icons NEW_26
+  - first:
+      213: 1180213858290618810
+    second: layout text and icons NEW_27
+  - first:
+      213: -9055592869291562006
+    second: layout text and icons NEW_28
+  - first:
+      213: -778200396886569218
+    second: layout text and icons NEW_29
+  - first:
+      213: -6264303974723492367
+    second: layout text and icons NEW_30
+  - first:
+      213: -794991516560979090
+    second: layout text and icons NEW_31
+  - first:
+      213: 961669662285144151
+    second: layout text and icons NEW_32
+  - first:
+      213: 2601171512995003444
+    second: layout text and icons NEW_33
+  - first:
+      213: 3912811305738805612
+    second: layout text and icons NEW_34
+  - first:
+      213: 1828692244977301433
+    second: layout text and icons NEW_35
+  - first:
+      213: -2411170427387927880
+    second: layout text and icons NEW_36
+  - first:
+      213: -2810002138311033694
+    second: layout text and icons NEW_37
+  - first:
+      213: -5527229984346962353
+    second: layout text and icons NEW_38
+  - first:
+      213: 2626240304862748114
+    second: layout text and icons NEW_39
+  - first:
+      213: 1509889565347967414
+    second: layout text and icons NEW_40
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: WebGL
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: layout text and icons NEW_0
+      rect:
+        serializedVersion: 2
+        x: 30
+        y: 672
+        width: 50
+        height: 50
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c399515d704a7600800000000000000
+      internalID: 466756418366182343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_1
+      rect:
+        serializedVersion: 2
+        x: 99
+        y: 661
+        width: 45
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 13f07396159991160800000000000000
+      internalID: 6996792071033392945
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_2
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 662
+        width: 53
+        height: 59
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 273fe8ecfc9c2bab0800000000000000
+      internalID: -4993707142439570574
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_3
+      rect:
+        serializedVersion: 2
+        x: 235
+        y: 661
+        width: 55
+        height: 60
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d500742f8555f0460800000000000000
+      internalID: 7210075368953675869
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_4
+      rect:
+        serializedVersion: 2
+        x: 308
+        y: 659
+        width: 47
+        height: 62
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f5a1f2d95683f4c10800000000000000
+      internalID: 2039911165302086239
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_5
+      rect:
+        serializedVersion: 2
+        x: 661
+        y: 670
+        width: 350
+        height: 54
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8aeb50f7b67feb4d0800000000000000
+      internalID: -3116781851029160280
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_6
+      rect:
+        serializedVersion: 2
+        x: 31
+        y: 576
+        width: 51
+        height: 44
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c84a554694e068d0800000000000000
+      internalID: -2855030829693122361
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_7
+      rect:
+        serializedVersion: 2
+        x: 88
+        y: 587
+        width: 22
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 78c36a9c453086ae0800000000000000
+      internalID: -1555990008561255289
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_8
+      rect:
+        serializedVersion: 2
+        x: 114
+        y: 587
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: eb9418a25482865e0800000000000000
+      internalID: -1916237363915175490
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_9
+      rect:
+        serializedVersion: 2
+        x: 132
+        y: 587
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1079041e8580bb60800000000000000
+      internalID: 7759849003227377690
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_10
+      rect:
+        serializedVersion: 2
+        x: 149
+        y: 587
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 3646b129c81317320800000000000000
+      internalID: 2553876943512233059
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_11
+      rect:
+        serializedVersion: 2
+        x: 167
+        y: 587
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a1caad8787c3dfe10800000000000000
+      internalID: 2233007478366972954
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_12
+      rect:
+        serializedVersion: 2
+        x: 184
+        y: 587
+        width: 14
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1267a7347179a9e70800000000000000
+      internalID: 9122770121364502049
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_13
+      rect:
+        serializedVersion: 2
+        x: 200
+        y: 581
+        width: 16
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77ade1ee6ec5acf40800000000000000
+      internalID: 5749510021199092343
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_14
+      rect:
+        serializedVersion: 2
+        x: 220
+        y: 587
+        width: 7
+        height: 23
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4eb6d41d22a03a530800000000000000
+      internalID: 3864944049870695396
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_15
+      rect:
+        serializedVersion: 2
+        x: 230
+        y: 587
+        width: 15
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57523dd26dbdf8160800000000000000
+      internalID: 7030079256286930293
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_16
+      rect:
+        serializedVersion: 2
+        x: 248
+        y: 587
+        width: 14
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: bc588712509f50ff0800000000000000
+      internalID: -70376418722675253
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_17
+      rect:
+        serializedVersion: 2
+        x: 265
+        y: 587
+        width: 16
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 68fa5e140adc69600800000000000000
+      internalID: 474792898918199174
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_18
+      rect:
+        serializedVersion: 2
+        x: 303
+        y: 577
+        width: 52
+        height: 43
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 30b15cc3f13591fe0800000000000000
+      internalID: -1217850830598366461
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_19
+      rect:
+        serializedVersion: 2
+        x: 361
+        y: 586
+        width: 19
+        height: 20
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e1b49185bd5503f00800000000000000
+      internalID: 1094469110015281950
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_20
+      rect:
+        serializedVersion: 2
+        x: 383
+        y: 580
+        width: 14
+        height: 21
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f516b16eb72490880800000000000000
+      internalID: -8644304909851991713
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_21
+      rect:
+        serializedVersion: 2
+        x: 411
+        y: 586
+        width: 6
+        height: 19
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: dc6f2d5b4fac49270800000000000000
+      internalID: 8256447169248294605
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_22
+      rect:
+        serializedVersion: 2
+        x: 419
+        y: 586
+        width: 12
+        height: 17
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1603dd3be496a9040800000000000000
+      internalID: 4655148951586812001
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_23
+      rect:
+        serializedVersion: 2
+        x: 433
+        y: 586
+        width: 14
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 0f40fe6adb5e589e0800000000000000
+      internalID: -1619635888257563408
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_24
+      rect:
+        serializedVersion: 2
+        x: 449
+        y: 586
+        width: 20
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21a6f19589ce6c680800000000000000
+      internalID: -8735034288164083182
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_25
+      rect:
+        serializedVersion: 2
+        x: 472
+        y: 586
+        width: 12
+        height: 15
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2523de5e698487780800000000000000
+      internalID: -8685112068444179886
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_26
+      rect:
+        serializedVersion: 2
+        x: 22
+        y: 427
+        width: 792
+        height: 72
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: fcaa920acfc0190f0800000000000000
+      internalID: -1112093353825424689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_27
+      rect:
+        serializedVersion: 2
+        x: 821
+        y: 440
+        width: 133
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ab1d7664046f06010800000000000000
+      internalID: 1180213858290618810
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_28
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 312
+        width: 809
+        height: 98
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aebe0539342145280800000000000000
+      internalID: -9055592869291562006
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_29
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 370
+        width: 28
+        height: 40
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: efe0283bcd64335f0800000000000000
+      internalID: -778200396886569218
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_30
+      rect:
+        serializedVersion: 2
+        x: 32
+        y: 399
+        width: 8
+        height: 6
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1f5e98589b8b019a0800000000000000
+      internalID: -6264303974723492367
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_31
+      rect:
+        serializedVersion: 2
+        x: 5
+        y: 338
+        width: 7
+        height: 25
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: e6b0fef7d6f97f4f0800000000000000
+      internalID: -794991516560979090
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_32
+      rect:
+        serializedVersion: 2
+        x: 819
+        y: 330
+        width: 133
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 750a6c37679885d00800000000000000
+      internalID: 961669662285144151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_33
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 205
+        width: 806
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43cbeef95b7391420800000000000000
+      internalID: 2601171512995003444
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_34
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 288
+        width: 18
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c61a1bfc6291d4630800000000000000
+      internalID: 3912811305738805612
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_35
+      rect:
+        serializedVersion: 2
+        x: 821
+        y: 222
+        width: 133
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b7326178e1d06910800000000000000
+      internalID: 1828692244977301433
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_36
+      rect:
+        serializedVersion: 2
+        x: 8
+        y: 256
+        width: 11
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8b2ad9e654dc98ed0800000000000000
+      internalID: -2411170427387927880
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_37
+      rect:
+        serializedVersion: 2
+        x: 12
+        y: 278
+        width: 10
+        height: 8
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2acf1e771fdd009d0800000000000000
+      internalID: -2810002138311033694
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_38
+      rect:
+        serializedVersion: 2
+        x: 90
+        y: 208
+        width: 11
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f468c1f1d955b43b0800000000000000
+      internalID: -5527229984346962353
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_39
+      rect:
+        serializedVersion: 2
+        x: 95
+        y: 204
+        width: 30
+        height: 24
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2dd582294a7427420800000000000000
+      internalID: 2626240304862748114
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: layout text and icons NEW_40
+      rect:
+        serializedVersion: 2
+        x: 457
+        y: 10
+        width: 133
+        height: 67
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6b172a85f8434f410800000000000000
+      internalID: 1509889565347967414
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable: {}
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
