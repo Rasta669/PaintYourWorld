@@ -717,7 +717,7 @@ public class WalletConnectManager : MonoBehaviour
                     if (BuyTokenBalanceText != null)
                     {
                         BuyTokenBalanceText.gameObject.SetActive(true);
-                        BuyTokenBalanceText.text = $"Need {colorPrice} color...";
+                        BuyTokenBalanceText.text = $"Need {colorPrice} color..Play to earn";
                     }
 
                     if (BuyButton != null)
@@ -734,11 +734,10 @@ public class WalletConnectManager : MonoBehaviour
                     if (BuyTokenBalanceText != null)
                     {
                         BuyTokenBalanceText.gameObject.SetActive(true);
-                        BuyTokenBalanceText.text = "Almost there...";
+                        BuyTokenBalanceText.text = "Finalizing...";
                     }
                     BigInteger nftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
                     //Debug.Log("Waiting here.
-
                     //Debug.Log($"Balance: {nftBalance} NFTs");
                     var transactionResult = await nftcontract.DropERC721_Claim(wallet, walletAddress, 1);
                     //Debug.Log($"NFTs claimed successfully! Transaction Hash: {transactionResult.TransactionHash}");
@@ -775,7 +774,7 @@ public class WalletConnectManager : MonoBehaviour
                         if (audioManager != null)
                             audioManager.PlayShortSuccessSound();
                         //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
-                        BuyTokenBalanceText.text = $"Claimed!";
+                        BuyTokenBalanceText.text = $"Claimed! To use -> myASSETS TAB";
                         //ClaimedNft.SetActive(true);
                         SetNftBalances();
 
@@ -888,7 +887,7 @@ public class WalletConnectManager : MonoBehaviour
 
                     //Debug.Log($"Smallest Token ID: {tokenId}");
                     //Debug.Log($"Balance: {nftBalance} NFTs");
-                    UseTokenText.text = "All checks passed, almost there!";
+                    UseTokenText.text = "almost there!";
                     var transactionResult = await nftcontract.DropER721_Burn(wallet, tokenId);
                     //Debug.Log($"NFTs burned successfully! Transaction Hash: {transactionResult.TransactionHash}");
                     var finalnftBalance = await nftcontract.ERC721_BalanceOf(walletAddress);
@@ -930,7 +929,7 @@ public class WalletConnectManager : MonoBehaviour
                         if (UseTokenText != null)
                         {
                             //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
-                            UseTokenText.text = $"Now You can use it in the game!";
+                            UseTokenText.text = $"Ready to use in game!";
                             //ClaimedNft.SetActive(true);
                             SetNftBalances();
 
@@ -941,7 +940,7 @@ public class WalletConnectManager : MonoBehaviour
                     if (UseTokenText != null)
                     {
                         //ClaimedNFTText.text = $"Claimed! Tx Hash: {transactionResult.TransactionHash}\nBalance: {tokenBalance}";
-                        UseTokenText.text = $"Now You can use it in the game!";
+                        UseTokenText.text = $"Ready to use in game!";
                         //ClaimedNft.SetActive(true);
                         //SetNft();
 
@@ -982,7 +981,7 @@ public class WalletConnectManager : MonoBehaviour
         SetNftBalances();
     }
 
-    public async void GetLiveTokenBalance()
+    public async Task GetLiveTokenBalance()
     {
         //Debug.Log($"Color price in wei: {colorPrice}");
         var tokencontract = await ThirdwebManager.Instance.GetContract(BuyTokenContractAddress, ActiveChainId);

@@ -385,7 +385,7 @@ public class ObstacleSpawner : MonoBehaviour
     private float currentMoveSpeed;
     private float lastSpawnX = 0f;
     private float difficultyFactor = 0f;
-    private const float difficultyIncreaseRate = 0.007f;
+    private const float difficultyIncreaseRate = 0.003f;
     private Queue<GameObject> obstaclePool;
     private List<GameObject> activeObstacles;
 

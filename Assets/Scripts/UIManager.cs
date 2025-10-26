@@ -866,8 +866,47 @@ public class GameManager : MonoBehaviour
         }
 
 
-        if (player != null)
+        if (player == null)
         {
+            selectedCharacterIndex = PlayerPrefs.GetInt("SelectedCharacterIndex", 1);
+            GameObject selectedPrefab = selectedCharacterIndex == 2 ? character2 : character1;
+
+            if (selectedPrefab != null)
+            {
+                player = Instantiate(selectedPrefab, initialPlayerPosition, Quaternion.identity);
+
+                // Reconnect all systems
+                var spawner = FindObjectOfType<RewardSpawner>();
+                if (spawner != null) spawner.SetPlayer(player);
+
+                var obstacleSpawner = FindObjectOfType<ObstacleSpawner>();
+                if (obstacleSpawner != null) obstacleSpawner.SetPlayer(player);
+
+                var fixedSpawner = FindObjectOfType<FixedXObstacleSpawner2D>();
+                if (fixedSpawner != null) fixedSpawner.SetPlayer(player.transform);
+
+                var bird = FindObjectOfType<BirdSpawner>();
+                if (bird != null) bird.SetPlayer(player);
+
+                var pm = FindObjectOfType<PaintManager>();
+                if (pm != null) pm.SetPlayer(player);
+
+                var controller = player.GetComponent<PlayerController>();
+                if (controller != null)
+                {
+                    controller.InitializeInput();
+                }
+
+                Debug.Log("✅ Player instantiated in StartGame.");
+            }
+            else
+            {
+                Debug.LogError("❌ No player prefab found for StartGame.");
+            }
+        }
+        else
+        {
+            // Reset player position if already instantiated
             player.transform.position = initialPlayerPosition;
         }
 
@@ -944,57 +983,7 @@ public class GameManager : MonoBehaviour
         StartCoroutine(ReturnToMainMenuWithTransition(SceneManager.GetActiveScene().name));
     }
 
-    //private IEnumerator ReturnToMainMenuWithTransition(string sceneName)
-    //{
-    //    // fade in transition
-    //    AudioManager.Instance.PlayMenuMusic();
-    //    transitionCanvasGroup.gameObject.SetActive(true);
-    //    float elapsedTime = 0f;
-    //    while (elapsedTime < transitionDuration)
-    //    {
-    //        elapsedTime += Time.unscaledDeltaTime;
-    //        transitionCanvasGroup.alpha = Mathf.Lerp(0f, 1f, elapsedTime / transitionDuration);
-    //        yield return null;
-    //    }
-    //    transitionCanvasGroup.alpha = 1f;
-
-    //    // load the scene
-    //    AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-    //    asyncLoad.allowSceneActivation = false;
-
-    //    while (asyncLoad.progress < 0.9f)
-    //    {
-    //        yield return null;
-    //    }
-    //    asyncLoad.allowSceneActivation = true;
-    //    while (!asyncLoad.isDone)
-    //    {
-    //        yield return null;
-    //    }
-
-    //    // fade out transition
-    //    elapsedTime = 0f;
-    //    while (elapsedTime < transitionDuration)
-    //    {
-    //        elapsedTime += Time.unscaledDeltaTime;
-    //        transitionCanvasGroup.alpha = Mathf.Lerp(1f, 0f, elapsedTime / transitionDuration);
-    //        yield return null;
-    //    }
-    //    transitionCanvasGroup.alpha = 0f;
-    //    transitionCanvasGroup.gameObject.SetActive(false);
-
-    //    // show the main menu instead of gameplay
-    //    loginCanvas.gameObject.SetActive(false);            // show login first (so user can log in again if needed)
-    //    mainMenuCanvas.gameObject.SetActive(true);         // show main menu
-    //    //gameModeMenuCanvas.SetActive(false);
-    //    leaderboardCanvas.gameObject.gameObject.SetActive(false);
-    //    resumeMenu.gameObject.SetActive(false);
-    //    pauseMenu.gameObject.SetActive(false);
-    //    gameOverMenu.gameObject.SetActive(false);
-    //    //gameWinCanvas.SetActive(false);
-    //    Time.timeScale = 0f;                    // keep the game paused until user starts
-    //    UpdateXPText();
-    //}
+    
 
     private IEnumerator ReturnToMainMenuWithTransition(string sceneName)
     {
@@ -1010,6 +999,11 @@ public class GameManager : MonoBehaviour
             yield return null;
         }
         transitionCanvasGroup.alpha = 1f;
+        if (claimButton != null)
+        {
+            claimButton.interactable = true;
+        }
+
 
         // load the scene
         AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
@@ -1067,11 +1061,7 @@ public class GameManager : MonoBehaviour
                 ghostButton.gameObject.SetActive(false); // hide if not enabled
         }
 
-        if (claimButton != null)
-        {
-            claimButton.interactable = true;
-        }
-
+        
         Time.timeScale = 0f;
         UpdateXPText();
 
@@ -1165,7 +1155,7 @@ public class GameManager : MonoBehaviour
         }
         transitionCanvasGroup.alpha = 0f;
         transitionCanvasGroup.gameObject.SetActive(false);
-
+        UpdatePauseMenuWalletInfo();
         // directly enter gameplay, skipping login/menu canvases
         loginCanvas.gameObject.SetActive(false);
         mainMenuCanvas.gameObject.SetActive(false);
@@ -1230,6 +1220,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
         isGameStarted = true;
         UpdateXPText();
+        
     }
 
     void StartInstructions()
@@ -1421,7 +1412,7 @@ public class GameManager : MonoBehaviour
             {
                 if (walletConnectManager.CustomTokenBalanceText != null)
                 {
-                    walletConnectManager.GetLiveTokenBalance();
+                    await walletConnectManager.GetLiveTokenBalance();
                     claimedTokenText.text = walletConnectManager.CustomTokenBalanceText.text;
                     claimedTokenText.gameObject.SetActive(true);
                 }
